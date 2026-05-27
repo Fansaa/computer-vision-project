@@ -1,0 +1,42 @@
+# ── Dataset (terlalu besar untuk git) ─────────────────────────
+Jawa/
+prepared_data/
+
+# ── Materi kuliah & file studio (tidak terkait proyek) ─────────
+Materi/
+Studio.org/
+Tugas/
+Literature Review/
+IEEE_Conference_Template__1_/
+
+# ── Claude internal memory ─────────────────────────────────────
+.claude/
+
+# ── LaTeX build artifacts ──────────────────────────────────────
+Paper_Computer_Vision/IEEEtran_HOWTO.pdf
+*.log
+*.aux
+*.synctex.gz
+*.out
+*.toc
+*.bbl
+*.blg
+*.fls
+*.fdb_latexmk
+
+# ── Python ────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+*.egg-info/
+dist/
+build/
+
+# ── Jupyter checkpoints ────────────────────────────────────────
+.ipynb_checkpoints/
+
+# ── OS ────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
