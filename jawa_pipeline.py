@@ -30,7 +30,7 @@ import albumentations as A
 # ============================================================
 # KONFIGURASI - sesuaikan path dengan environment Anda
 # ============================================================
-JAWA_ROOT      = Path("Indonesian Local Script Characters/Indonesian Local Script Characters/Jawa/Jawa")
+JAWA_ROOT      = Path("Jawa")
 ALL_CLASS_DIR  = JAWA_ROOT / "all_class"
 VARIATIONS_DIR = JAWA_ROOT / "variations"
 
