@@ -217,19 +217,24 @@ SAFE_AUG = A.Compose([
         A.Morphological(scale=(1, 2), operation="dilation", p=1.0),
         A.Morphological(scale=(1, 2), operation="erosion",  p=1.0),
     ], p=0.4),
-    A.RandomCrop(height=200, width=200, p=0.3),
     A.PadIfNeeded(
         min_height=224, min_width=224,
         border_mode=cv2.BORDER_CONSTANT,
         fill=255,
         p=1.0
     ),
+    A.RandomCrop(height=200, width=200, p=0.3),
     A.Resize(height=224, width=224),
 ])
 
 
 def augment_image(img_path: Path) -> np.ndarray:
-    img = cv2.imread(str(img_path))
+    try:
+        with open(img_path, "rb") as f:
+            chunk = np.frombuffer(f.read(), dtype=np.uint8)
+        img = cv2.imdecode(chunk, cv2.IMREAD_COLOR)
+    except Exception:
+        img = None
     if img is None:
         return None
     img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -281,7 +286,13 @@ def step3_targeted_augmentation():
                 if aug_img is None:
                     continue
                 save_name = f"aug_{cycle_iter:02d}_{aug_count:04d}_{img_path.stem}.jpg"
-                cv2.imwrite(str(dst_class_dir / save_name), aug_img)
+                try:
+                    _, encoded_img = cv2.imencode(".jpg", aug_img)
+                    with open(dst_class_dir / save_name, "wb") as f:
+                        f.write(encoded_img)
+                except Exception as e:
+                    print(f"Failed to write augmented image {save_name}: {e}")
+                    continue
                 aug_count += 1
             cycle_iter += 1
 
@@ -335,7 +346,7 @@ def step4_compute_class_weights():
     weight_dict = {class_names[i]: float(round(w, 6)) for i, w in zip(classes, weights)}
 
     WEIGHTS_FILE.parent.mkdir(parents=True, exist_ok=True)
-    with open(WEIGHTS_FILE, "w") as f:
+    with open(WEIGHTS_FILE, "w", encoding="utf-8") as f:
         json.dump(
             {"class_to_idx": class_to_idx, "class_weights": weight_dict},
             f, indent=2, ensure_ascii=False
