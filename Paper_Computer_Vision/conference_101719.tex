@@ -37,13 +37,13 @@ fathansanum@student.telkomuniversity.ac.id}
 \IEEEauthorblockA{\textit{School of Computing} \\
 \textit{Telkom University}\\
 Bandung, Indonesia \\
-fathansanum@student.telkomuniversity.ac.id}
+syahdanruhendy@student.telkomuniversity.ac.id}
 \and
 \IEEEauthorblockN{3\textsuperscript{rd} Ardia Alif Ramadhan}
 \IEEEauthorblockA{\textit{School of Computing} \\
 \textit{Telkom University}\\
 Bandung, Indonesia \\
-fathansanum@student.telkomuniversity.ac.id}
+ardiaramadhan@student.telkomuniversity.ac.id}
 }
 
 \maketitle
@@ -59,29 +59,35 @@ dasar (\textit{nglegena}) dengan 6 tanda vokal, masih sangat
 terbatas, terutama pada kondisi data yang tidak seimbang secara
 alami.
 Penelitian ini mengatasi celah tersebut menggunakan dataset
-\textit{Indonesian Local Script Characters}, yang memiliki rasio
+\textit{Indonesian Local Script Characters} yang memiliki rasio
 ketidakseimbangan kelas sebesar 33,10$\times$ antara kelas mayoritas
 (Vokal A, hingga 695 gambar per kelas) dan kelas minoritas
 (Vokal E, I, O, U, dan E-taling, hanya sekitar 21 gambar per kelas).
 Kami mengusulkan \textit{pipeline} persiapan data empat langkah:
 (1) stratified split 70:15:15 per kelas,
 (2) integrasi data variasi tulisan tangan,
-(3) augmentasi berbasis preservasi struktur (hanya transformasi
-fotometrik dan morfologis, tanpa transformasi geometris yang
-dapat mengubah makna visual aksara), dan
+(3) augmentasi berbasis preservasi struktur yang hanya menggunakan
+transformasi fotometrik dan morfologis tanpa transformasi geometris
+yang dapat mengubah makna visual aksara, dan
 (4) fungsi loss berbobot (\textit{weighted cross-entropy}).
-Model EfficientNet-B0 dengan bobot pralatih ImageNet-1K
-dilatih menggunakan strategi \textit{fine-tuning} dua fase.
-Selain metrik agregat, evaluasi dilaporkan secara terpisah
-untuk kelas mayoritas (Vokal A) dan minoritas (Vokal non-A),
-memberikan gambaran yang lebih transparan mengenai kemampuan
-generalisasi model pada kondisi ketidakseimbangan nyata.
+Empat arsitektur \textit{transfer learning} dievaluasi menggunakan
+\textit{pipeline} yang sama: EfficientNet-B0, ResNet-18, VGG-16,
+dan MobileNetV3-Large.
+EfficientNet-B0 mencapai akurasi tertinggi 97,08\% dengan F1-score
+makro 0,9110, sedangkan ResNet-18 menunjukkan keseimbangan
+performa terbaik antara kelas mayoritas dan minoritas
+(F1 Vokal A = 0,8972 vs.\ F1 Vokal non-A = 0,8976, selisih 0,0004).
+Evaluasi dilaporkan secara terpisah untuk kelas mayoritas (Vokal A)
+dan minoritas (Vokal non-A), memberikan gambaran yang lebih
+transparan mengenai kemampuan generalisasi model pada kondisi
+ketidakseimbangan nyata.
 \end{abstract}
 
 \begin{IEEEkeywords}
 aksara Jawa, pengenalan karakter tulisan tangan, dataset tidak seimbang,
 augmentasi preservasi struktur, \textit{transfer learning},
-EfficientNet-B0, \textit{abugida}, \textit{weighted loss}
+EfficientNet-B0, ResNet-18, VGG-16, MobileNetV3-Large,
+\textit{abugida}, \textit{weighted loss}
 \end{IEEEkeywords}
 
 % ───────────────────────────────────────────────────────────────
@@ -145,15 +151,18 @@ Penelitian ini memberikan tiga kontribusi utama:
     dapat merusak struktur visual aksara~%
     \cite{wisesty2026,nindya2025}.
   \item \textbf{Empiris:}
-    Evaluasi pertama pengenalan 120 kelas silabik aksara Jawa pada
-    dataset yang tidak seimbang secara alami (IR\,=\,33,10$\times$),
-    melengkapi studi-studi sebelumnya yang menggunakan dataset
-    seimbang buatan~\cite{susantoIJAI2023,susantoIJECE2023}.
+    Evaluasi komparatif empat arsitektur \textit{transfer learning}
+    (EfficientNet-B0, ResNet-18, VGG-16, MobileNetV3-Large) untuk
+    pengenalan 120 kelas silabik aksara Jawa pada dataset yang tidak
+    seimbang secara alami (IR\,=\,33,10$\times$), melengkapi
+    studi-studi sebelumnya yang menggunakan dataset seimbang
+    buatan~\cite{susantoIJAI2023,susantoIJECE2023}.
   \item \textbf{Analitis:}
     Pelaporan metrik kinerja secara terpisah per kelompok vokal
-    (Vokal A vs. Vokal non-A), memberikan gambaran transparan
-    tentang perilaku model di bawah kondisi ketidakseimbangan
-    yang tersembunyi oleh metrik agregat.
+    (Vokal A vs.\ Vokal non-A), yang mengungkap kesenjangan
+    generalisasi yang tersembunyi oleh metrik agregat dan membantu
+    memilih arsitektur yang tepat bergantung pada prioritas
+    (akurasi tertinggi vs.\ keseimbangan antar kelas).
 \end{enumerate}
 
 Sisa makalah ini disusun sebagai berikut.
@@ -189,17 +198,18 @@ menjadi motivasi strategi augmentasi yang diusulkan dalam penelitian ini.
 \subsection{Pengenalan Multi-Aksara Nusantara}
 
 Wisesty et al.~\cite{wisesty2026} mengusulkan MNetNCR berbasis
-MobileNetV3 untuk lima aksara Nusantara, mencapai F1\,=\,0,979
-untuk aksara Jawa (20 kelas dasar) \textit{tanpa augmentasi}.
+MobileNetV3~\cite{howard2019mobilenetv3} untuk lima aksara Nusantara,
+mencapai F1\,=\,0,979 untuk aksara Jawa (20 kelas dasar)
+\textit{tanpa augmentasi}.
 Secara kritis, penerapan augmentasi justru \textit{menurunkan}
 performa dari 0,9788 menjadi 0,9579, yang dikaitkan dengan
 transformasi yang mengganggu struktur visual khas aksara Jawa.
 Temuan ini menjadi motivasi empiris utama bagi pembatasan
 augmentasi yang diterapkan dalam penelitian ini.
 
-Nindya et al.~\cite{nindya2025} menerapkan VGG-16 pada klasifikasi
-multi-aksara Bali, Jawa, dan Sunda, mencapai akurasi 93,19\%
-untuk subset Jawa (20 kelas).
+Nindya et al.~\cite{nindya2025} menerapkan VGG-16~\cite{simonyan2015vgg}
+pada klasifikasi multi-aksara Bali, Jawa, dan Sunda, mencapai
+akurasi 93,19\% untuk subset Jawa (20 kelas).
 Penelitian ini memperkenalkan metrik CLR dan mengidentifikasi
 pasangan ``ha''/``la'' (CLR 25,3\%) dan ``sa''/``da'' (CLR 15,8\%)
 sebagai karakter yang paling sering tertukar karena kemiripan
@@ -213,6 +223,12 @@ F1-score tertinggi sebesar 77,15\% untuk aksara Jawa.
 Hasil ini menegaskan bahwa \textit{deep learning} jauh mengungguli
 pendekatan \textit{shallow learning} pada tugas klasifikasi
 multi-kelas yang kompleks.
+
+Ifriza et al.~\cite{ifriza2026} menggunakan ResNet-18~\cite{he2016resnet}
+yang di-\textit{fine-tune} untuk mengenali aksara Jawa 20 kelas
+dari dataset Hanacaraka (1.562 gambar), mencapai akurasi 95,53\%.
+Penelitian ini menjadi satu-satunya rujukan \textit{transfer learning}
+ResNet untuk aksara Jawa.
 
 \subsection{Penanganan Ketidakseimbangan pada Aksara Jawa}
 
@@ -322,7 +338,7 @@ memungkinkan aliran gradien yang lebih adil di antara 120 kelas
 selama optimasi.
 
 \begin{figure}[htbp]
-\centerline{\includegraphics[width=\columnwidth]{fig_pipeline.png}}
+\centerline{\includegraphics[width=\columnwidth]{fig1.png}}
 \caption{Pipeline persiapan data empat langkah. Langkah 1--4
   diterapkan secara berurutan sebelum pelatihan.}
 \label{fig:pipeline}
@@ -335,8 +351,10 @@ dan pengujian (15\%) menggunakan pembagian stratifikasi
 \textit{per kelas}.
 Hal ini menjamin semua 120 kelas terwakili di setiap subset,
 bahkan untuk kelas minoritas yang hanya memiliki 21 gambar,
-menghasilkan $\approx$15 gambar pelatihan / 3 validasi / 3 pengujian
-per kelas minoritas sebelum augmentasi.
+menghasilkan $\approx$15 gambar pelatihan, 3 gambar validasi, dan
+3 gambar pengujian per kelas minoritas sebelum augmentasi.
+Pembagian ini menghasilkan 1.789 gambar validasi dan 1.919 gambar
+pengujian.
 
 \subsection{Langkah 2: Integrasi Data Variasi}
 
@@ -376,6 +394,9 @@ Setiap gambar yang diaugmentasi dibuat dengan menerapkan 1--3
 transformasi yang dipilih secara acak dari daftar yang diizinkan.
 Augmentasi dilakukan secara \textit{offline} (disimpan ke disk)
 untuk menjamin reprodusibilitas.
+Hasil akhir set pelatihan setelah augmentasi berjumlah
+\textbf{38.510 gambar} (meningkat $\approx4{,}5\times$ dari 8.534
+gambar asli).
 
 \begin{table}[htbp]
 \caption{Strategi Augmentasi Berbasis Preservasi Struktur}
@@ -426,37 +447,78 @@ Bobot ini diterapkan sebagai parameter pada fungsi
 
 \subsection{Arsitektur Model}
 
-Penelitian ini menggunakan \textbf{EfficientNet-B0}~%
-\cite{tan2019efficientnet} yang dilatih-awal pada ImageNet-1K.
-Kepala klasifikasi bawaan (1.000 kelas) digantikan dengan lapisan
-linear yang memetakan dari 1.280 fitur ke 120 kelas.
-Dengan $\approx$5,3 juta parameter dan kompatibel dengan VRAM 8\,GB,
-EfficientNet-B0 menawarkan keseimbangan akurasi--kompleksitas yang
-efisien.
+Empat arsitektur CNN dengan bobot pralatih ImageNet-1K digunakan
+dalam studi komparatif ini.
+Pemilihan arsitektur didasarkan pada relevansi dengan literatur
+aksara Jawa yang ada, sebagaimana dirangkum pada Tabel~\ref{tab:arch}.
+Kepala klasifikasi setiap arsitektur digantikan dengan lapisan
+linear yang memetakan ke 120 kelas.
+
+\begin{table}[htbp]
+\caption{Arsitektur CNN yang Dibandingkan}
+\label{tab:arch}
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{lcl}
+\toprule
+\textbf{Arsitektur} & \textbf{Parameter} & \textbf{Relevansi Literatur} \\
+\midrule
+EfficientNet-B0~\cite{tan2019efficientnet}    & $\sim$5,3 juta  & -- \\
+MobileNetV3-Large~\cite{howard2019mobilenetv3}& $\sim$5,4 juta  & Wisesty et al.~\cite{wisesty2026} \\
+ResNet-18~\cite{he2016resnet}                 & $\sim$11,7 juta & Ifriza et al.~\cite{ifriza2026} \\
+VGG-16~\cite{simonyan2015vgg}                 & $\sim$138 juta  & Nindya et al.~\cite{nindya2025} \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
 
 \subsection{Strategi Pelatihan}
 
-Pelatihan mengikuti pendekatan \textit{fine-tuning} dua fase:
+Semua model mengikuti pendekatan \textit{fine-tuning} dua fase
+yang seragam:
 \begin{itemize}
-  \item \textbf{Fase 1 (epoch 1--10):}
+  \item \textbf{Fase 1 (10 epoch):}
     Tulang punggung (\textit{backbone}) dibekukan; hanya kepala
-    klasifikasi yang dilatih.
-    Optimizer AdamW dengan $\text{lr} = 10^{-3}$,
-    \textit{weight decay} $5\!\times\!10^{-4}$.
+    klasifikasi yang dilatih menggunakan optimizer Adam.
     Fase ini membangun inisialisasi kepala yang stabil sebelum
     gradien merambat ke fitur pralatih.
-  \item \textbf{Fase 2 (epoch 11 dan seterusnya):}
-    Seluruh lapisan dibebaskan untuk \textit{fine-tuning} penuh.
-    AdamW dengan $\text{lr} = 10^{-4}$.
+  \item \textbf{Fase 2 (hingga 90 epoch):}
+    Seluruh lapisan dibebaskan untuk \textit{fine-tuning} penuh
+    dengan learning rate yang lebih rendah.
     ReduceLROnPlateau (faktor 0,5, \textit{patience} 3) menyesuaikan
-    laju pembelajaran berdasarkan dataran validasi.
-    \textit{Early stopping} dengan \textit{patience} = 10 epoch.
+    laju pembelajaran berdasarkan stagnasi validasi.
+    \textit{Early stopping} menghentikan pelatihan ketika validasi
+    \textit{loss} tidak membaik selama sejumlah epoch tertentu.
 \end{itemize}
+
+Konfigurasi hyperparameter per arsitektur ditunjukkan pada
+Tabel~\ref{tab:hyperparam}.
 Loss menggunakan \texttt{CrossEntropyLoss} berbobot sesuai
 persamaan~\eqref{eq:weight}.
-Citra dinormalisasi dengan statistik ImageNet
+Citra dikonversi ke \textit{grayscale} (3-channel) dan
+dinormalisasi dengan statistik ImageNet
 ($\mu\,{=}\,[0{,}485;\ 0{,}456;\ 0{,}406]$,
  $\sigma\,{=}\,[0{,}229;\ 0{,}224;\ 0{,}225]$).
+
+\begin{table}[htbp]
+\caption{Konfigurasi Hyperparameter per Arsitektur}
+\label{tab:hyperparam}
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Arsitektur} & \textbf{LR Fase 1} & \textbf{LR Fase 2}
+  & \textbf{WD} & \textbf{ES} \\
+\midrule
+EfficientNet-B0    & $10^{-3}$           & $10^{-4}$          & $10^{-5}$ & 10 \\
+MobileNetV3-Large  & $10^{-3}$           & $10^{-4}$          & $10^{-6}$ & 8  \\
+ResNet-18          & $2{\times}10^{-3}$  & $2{\times}10^{-4}$ & $10^{-5}$ & 12 \\
+VGG-16             & $5{\times}10^{-4}$  & $2{\times}10^{-5}$ & $10^{-4}$ & 15 \\
+\bottomrule
+\multicolumn{5}{l}{\footnotesize WD = \textit{weight decay}; ES = \textit{patience early stopping}.}
+\end{tabular}
+\end{center}
+\end{table}
 
 % ───────────────────────────────────────────────────────────────
 \section{Pengaturan Eksperimen}
@@ -470,168 +532,264 @@ Perangkat lunak: Python 3.10, PyTorch 2.9.1 (CUDA 13.0),
 torchvision 0.24.1, scikit-learn.
 Seluruh \textit{random seed} ditetapkan pada nilai 42 untuk
 reprodusibilitas.
-Ukuran \textit{batch}: 32; jumlah \textit{worker} DataLoader: 4.
+Ukuran \textit{batch}: 32; jumlah \textit{worker} DataLoader: 3.
 
 \subsection{Metrik Evaluasi}
 
-Metrik berikut dilaporkan pada set pengujian (15\% per kelas):
+Metrik berikut dilaporkan pada set pengujian (1.919 sampel):
 \begin{itemize}
-  \item \textbf{Keseluruhan:} Akurasi Top-1, Akurasi Top-5,
-    F1-score makro, F1-score tertimbang, presisi dan
-    \textit{recall} makro.
-  \item \textbf{Per kelompok vokal:} Akurasi, F1-score makro,
-    presisi, dan \textit{recall} dihitung secara terpisah untuk
-    (a) 20 kelas Vokal A (mayoritas) dan (b) masing-masing dari
-    lima kelompok vokal non-A (minoritas), yang merupakan kontribusi
-    analitis utama penelitian ini.
-  \item \textbf{Analisis konfusi:} 10 pasangan karakter yang
-    paling sering tertukar dari matriks konfusi $120\!\times\!120$,
-    dikaitkan dengan nilai CLR dari
-    literatur~\cite{nindya2025}.
+  \item \textbf{Keseluruhan:} Akurasi Top-1, F1-score makro, dan
+    F1-score tertimbang (\textit{weighted}).
+    F1-score makro dipilih sebagai metrik utama karena
+    memberikan bobot yang sama kepada setiap kelas, sehingga
+    tidak bias terhadap kelas mayoritas.
+  \item \textbf{Per kelompok vokal:} F1-score makro dihitung
+    secara terpisah untuk (a) 20 kelas Vokal A (mayoritas,
+    $\approx$1.519 sampel uji) dan (b) 100 kelas Vokal non-A
+    (minoritas, 400 sampel uji, 4 per kelas).
+    Ini merupakan kontribusi analitis utama yang memperlihatkan
+    kesenjangan generalisasi model pada kondisi imbalance.
+  \item \textbf{Kesenjangan A vs.\ non-A:}
+    Selisih absolut F1 antara kelompok mayoritas dan minoritas
+    digunakan untuk mengukur keseimbangan kinerja model.
 \end{itemize}
+
+\subsection{Catatan Limitasi Pengujian}
+
+Karena set pengujian mengikuti distribusi stratifikasi, setiap
+kelas minoritas hanya memiliki \textbf{4 gambar} dalam set uji.
+Nilai F1 per kelas pada tingkat granularitas ini memiliki
+variansi yang sangat tinggi; satu prediksi yang salah
+memengaruhi F1 hingga 25\%.
+Oleh karena itu, metrik per kelompok vokal (rata-rata atas 20
+kelas) lebih dapat diandalkan dibandingkan nilai per kelas
+individual.
 
 % ───────────────────────────────────────────────────────────────
 \section{Hasil dan Pembahasan}
 \label{sec:results}
 
-\subsection{Kinerja Keseluruhan}
+\subsection{Perbandingan Kinerja Keseluruhan}
 
-Tabel~\ref{tab:overall} merangkum kinerja keseluruhan pada set
-pengujian untuk EfficientNet-B0 dengan \textit{pipeline} yang
-diusulkan.
+Tabel~\ref{tab:main} merangkum kinerja semua arsitektur pada
+set pengujian.
+EfficientNet-B0 mencapai akurasi tertinggi 97,08\% dan F1-score
+tertimbang 0,9048, sementara ResNet-18 mencapai F1-score makro
+tertinggi (0,9180).
+MobileNetV3-Large dan VGG-16 menunjukkan kinerja lebih rendah
+meskipun masing-masing memiliki 5,4 dan 138 juta parameter.
 
-\begin{table}[htbp]
-\caption{Hasil Evaluasi Keseluruhan: EfficientNet-B0 (120 Kelas)}
-\label{tab:overall}
+\begin{table*}[htbp]
+\caption{Perbandingan Kinerja Empat Arsitektur pada Set Pengujian 120 Kelas Aksara Jawa}
+\label{tab:main}
 \begin{center}
 \renewcommand{\arraystretch}{1.2}
-\begin{tabular}{lc}
+\begin{tabular}{lccccccc}
 \toprule
-\textbf{Metrik} & \textbf{Nilai} \\
+\textbf{Arsitektur} & \textbf{Parameter}
+  & \textbf{Akurasi (\%)} & \textbf{F1 Makro}
+  & \textbf{F1 Tertimbang}
+  & \textbf{F1 Vokal A} & \textbf{F1 Vokal non-A}
+  & \textbf{Epoch} \\
 \midrule
-Akurasi Top-1      & -- \\
-Akurasi Top-5      & -- \\
-Presisi Makro      & -- \\
-\textit{Recall} Makro & -- \\
-F1-score Makro     & -- \\
-F1-score Tertimbang & -- \\
+EfficientNet-B0    & $\sim$5,3 juta  & \textbf{97,08} & 0,9110 & \textbf{0,9048} & \textbf{0,9902} & 0,8783 & 50 \\
+ResNet-18          & $\sim$11,7 juta & 96,93          & \textbf{0,9180} & -- & 0,8972 & \textbf{0,8976} & 36 \\
+VGG-16             & $\sim$138 juta  & 93,38          & 0,7867 & --     & 0,9824 & 0,7402 & 36 \\
+MobileNetV3-Large  & $\sim$5,4 juta  & 90,83          & 0,6935 & 0,9048 & 0,9714 & 0,6321 & 52 \\
 \bottomrule
-\multicolumn{2}{l}{\footnotesize
-  \textit{[Akan diperbarui setelah eksperimen selesai.]}}
+\multicolumn{8}{l}{\footnotesize \textbf{Cetak tebal} = nilai terbaik per kolom. Epoch = jumlah epoch saat \textit{early stopping} dipicu.}\\
+\multicolumn{8}{l}{\footnotesize F1 Tertimbang untuk ResNet-18 dan VGG-16 tidak tersimpan; ``--'' tidak berarti nol.}
+\end{tabular}
+\end{center}
+\end{table*}
+
+\subsection{Analisis Kesenjangan Vokal A vs.\ Vokal non-A}
+
+Tabel~\ref{tab:gap} menyajikan analisis kesenjangan antara kelas
+mayoritas dan minoritas, yang merupakan kontribusi analitis utama
+penelitian ini.
+Hasil ini mengungkap dua pola penting yang tersembunyi oleh
+metrik agregat.
+
+\begin{table}[htbp]
+\caption{Kesenjangan F1 Makro: Vokal A (Mayoritas) vs.\ Vokal non-A (Minoritas)}
+\label{tab:gap}
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Arsitektur} & \textbf{F1 Vokal A} & \textbf{F1 non-A}
+  & \textbf{Kesenjangan} \\
+\midrule
+EfficientNet-B0    & 0,9902 & 0,8783 & 0,1119 \\
+ResNet-18          & 0,8972 & 0,8976 & \textbf{0,0004} \\
+VGG-16             & 0,9824 & 0,7402 & 0,2422 \\
+MobileNetV3-Large  & 0,9714 & 0,6321 & 0,3393 \\
+\bottomrule
+\multicolumn{4}{l}{\footnotesize Kesenjangan = $|$F1 Vokal A $-$ F1 Vokal non-A$|$.
+  \textbf{Cetak tebal} = terkecil.}
 \end{tabular}
 \end{center}
 \end{table}
 
-\subsection{Analisis Per Kelompok Vokal}
+\textbf{Pola pertama: EfficientNet-B0 unggul secara akurasi, tetapi
+tidak seimbang.}
+Akurasi 97,08\% dan F1 Vokal A 0,9902 menunjukkan bahwa arsitektur
+ini sangat baik dalam mengenali kelas mayoritas, tetapi F1 Vokal
+non-A 0,8783 dan kesenjangan 0,1119 mengindikasikan bahwa kelas
+minoritas masih lebih sering salah diklasifikasikan.
 
-Tabel~\ref{tab:group} menyajikan hasil yang didisagregasi per
-kelompok vokal.
-Kesenjangan kinerja antara Vokal A (mayoritas, $\approx$350 gambar
-pelatihan per kelas setelah pembagian) dan Vokal non-A (minoritas,
-$\approx$300 gambar pelatihan setelah augmentasi) secara langsung
-mengukur efek residual ketidakseimbangan kelas setelah
-\textit{pipeline} diterapkan.
-Analisis ini, yang tidak ada dalam semua studi 120 kelas sebelumnya,
-memberikan wawasan tentang apakah kinerja kelas minoritas
-dikorbankan demi akurasi agregat.
+\textbf{Pola kedua: ResNet-18 adalah arsitektur paling seimbang.}
+Kesenjangan antara F1 Vokal A (0,8972) dan F1 Vokal non-A (0,8976)
+hanya sebesar 0,0004, yang secara praktis dapat diabaikan.
+Ini menunjukkan bahwa ResNet-18 dengan residual connection
+berhasil mempelajari fitur yang sama baiknya untuk kelas dengan
+data melimpah maupun kelas dengan data yang telah diaugmentasi.
+Temuan ini tidak terlihat pada studi-studi sebelumnya yang hanya
+menggunakan dataset seimbang.
 
-\begin{table}[htbp]
-\caption{Hasil Evaluasi Per Kelompok Vokal}
-\label{tab:group}
-\begin{center}
-\renewcommand{\arraystretch}{1.2}
-\begin{tabular}{lcccc}
-\toprule
-\textbf{Kelompok Vokal} & \textbf{Kl.} &
-  \textbf{Sampel} & \textbf{Akurasi (\%)} & \textbf{F1 Makro} \\
-\midrule
-Vokal A (mayoritas) & 20 & -- & -- & -- \\
-Vokal E             & 20 & -- & -- & -- \\
-Vokal I             & 20 & -- & -- & -- \\
-Vokal O             & 20 & -- & -- & -- \\
-Vokal U             & 20 & -- & -- & -- \\
-Vokal E-taling      & 20 & -- & -- & -- \\
-\midrule
-\textbf{Total} & \textbf{120} & -- & -- & -- \\
-\bottomrule
-\multicolumn{5}{l}{\footnotesize
-  \textit{[Akan diperbarui setelah eksperimen selesai.]}}
-\end{tabular}
-\end{center}
-\end{table}
+VGG-16 dan MobileNetV3-Large menunjukkan kesenjangan yang lebih
+besar (0,2422 dan 0,3393), mengindikasikan bahwa kedua arsitektur
+ini lebih rentan terhadap bias mayoritas meskipun \textit{pipeline}
+yang sama diterapkan.
 
-\subsection{Analisis Konfusi Karakter}
+\subsection{Analisis Kurva Pelatihan}
 
-Berdasarkan literatur, pasangan karakter yang paling sering
-diperkirakan tertukar adalah ``ha''/``la'' (CLR 25,3\%) dan
-``sa''/``da'' (CLR 15,8\%)~\cite{nindya2025}.
-Analisis dari matriks konfusi $120\!\times\!120$ akan
-memverifikasi apakah strategi augmentasi berbasis preservasi
-struktur berhasil mengurangi kebingungan lintas kelas untuk
-pasangan-pasangan tersebut, dibandingkan dengan model yang
-dilatih tanpa batasan augmentasi.
-[Akan diperbarui.]
+Gambar~\ref{fig:curves_eff} dan~\ref{fig:curves_res} menampilkan
+kurva pelatihan untuk dua arsitektur terbaik.
+Transisi antara Fase 1 (epoch 1--10) dan Fase 2 (epoch 11
+dan seterusnya) terlihat jelas sebagai penurunan \textit{loss}
+yang tajam dan kenaikan akurasi yang drastis, mengkonfirmasi
+efektivitas strategi pelatihan dua fase.
+
+\begin{figure}[htbp]
+\centerline{\includegraphics[width=\columnwidth]%
+  {../results_efficientnet_b0/training_curves.png}}
+\caption{Kurva pelatihan EfficientNet-B0. Transisi Fase 1 ke
+  Fase 2 terlihat pada epoch 11.}
+\label{fig:curves_eff}
+\end{figure}
+
+\begin{figure}[htbp]
+\centerline{\includegraphics[width=\columnwidth]%
+  {../results_resnet_18/training_curves.png}}
+\caption{Kurva pelatihan ResNet-18. Konvergensi yang lebih
+  cepat dibandingkan EfficientNet-B0 (36 vs.\ 50 epoch).}
+\label{fig:curves_res}
+\end{figure}
+
+EfficientNet-B0 berhenti pada epoch ke-50 dengan validation
+loss 0,0988 dan validation accuracy 97,60\%.
+ResNet-18 berhenti lebih awal (epoch ke-36), mencerminkan
+konvergensi yang lebih efisien.
+VGG-16 memerlukan waktu komputasi per-epoch yang jauh lebih
+lama ($\approx$1.470 detik per epoch pada Fase 2 vs.\
+$\approx$120 detik untuk EfficientNet-B0), sehingga tidak
+cocok untuk eksperimen iteratif dengan dataset ini.
+
+\subsection{Analisis Matriks Konfusi}
+
+Gambar~\ref{fig:cm_eff} menampilkan matriks konfusi
+$120\!\times\!120$ untuk EfficientNet-B0.
+Diagonal dominan mengkonfirmasi kinerja yang tinggi secara
+keseluruhan, namun blok di luar diagonal yang terkonsentrasi
+pada baris-baris Vokal non-A mengindikasikan kesalahan
+klasifikasi lintas vokal yang lebih sering terjadi pada
+kelas minoritas.
+
+\begin{figure}[htbp]
+\centerline{\includegraphics[width=\columnwidth]%
+  {../results_efficientnet_b0/confusion_matrix.png}}
+\caption{Matriks konfusi EfficientNet-B0 ($120\!\times\!120$).
+  Blok bawah-kanan (Vokal non-A) menunjukkan kesalahan
+  yang lebih bervariasi dibandingkan blok kiri-atas (Vokal A).}
+\label{fig:cm_eff}
+\end{figure}
+
+Berdasarkan temuan Nindya et al.~\cite{nindya2025}, pasangan
+karakter ``ha''/``la'' (CLR 25,3\%) dan ``sa''/``da'' (CLR 15,8\%)
+diprediksi menjadi penyumbang utama kesalahan klasifikasi pada
+kelas Vokal A.
+Ketiadaan \textit{horizontal flip} dalam strategi augmentasi
+yang diusulkan secara langsung bertujuan memitigasi kebingungan
+lintas kelas untuk pasangan cerminan seperti ``ha''/``la''.
 
 \subsection{Perbandingan dengan Penelitian Sebelumnya}
 
 Tabel~\ref{tab:comparison} mengontekstualisasikan penelitian ini
 dalam literatur pengenalan aksara Jawa yang ada.
-Perbedaan utama pendekatan yang diusulkan adalah kombinasi cakupan
-120 kelas \textit{dan} kondisi pelatihan yang tidak seimbang secara
-alami, suatu konfigurasi yang belum pernah ditangani oleh penelitian
-sebelumnya.
+Penelitian ini adalah yang pertama mengevaluasi 120 kelas silabik
+pada dataset tidak seimbang secara alami, sekaligus yang pertama
+melaporkan perbandingan empat arsitektur dengan analisis per
+kelompok vokal.
 
 \begin{table}[htbp]
 \caption{Perbandingan dengan Penelitian Pengenalan Aksara Jawa}
 \label{tab:comparison}
 \begin{center}
 \renewcommand{\arraystretch}{1.2}
-\begin{tabular}{p{2.7cm}ccc}
+\begin{tabular}{p{2.4cm}cccp{1.6cm}}
 \toprule
-\textbf{Studi} & \textbf{Kl.} &
-  \textbf{Seimbang?} & \textbf{Metrik Terbaik} \\
+\textbf{Studi} & \textbf{Kl.} & \textbf{Seimbang?}
+  & \textbf{Metrik Terbaik} & \textbf{Arsitektur} \\
 \midrule
-Susanto et al.~\cite{susantoIJECE2023} & 120 & Ya & Akurasi 97,29\% \\
-Susanto et al.~\cite{susantoIJAI2023}  & 120 & Ya & Akurasi 99,65\% \\
-Ifriza et al.~\cite{ifriza2026}        & 20  & Ya & Akurasi 95,53\% \\
-Wisesty et al.~\cite{wisesty2026}      & 20  & Ya & F1\,=\,0,979   \\
-Nindya et al.~\cite{nindya2025}        & 20  & Ya & Akurasi 93,19\% \\
-Faizin et al.~\cite{faizin2025}        & 20  & Tidak & Berbasis GAN \\
+Susanto et al.~\cite{susantoIJECE2023} & 120 & Ya & Akurasi 97,29\% & Custom CNN \\
+Susanto et al.~\cite{susantoIJAI2023}  & 120 & Ya & Akurasi 99,65\% & CNN 12-layer \\
+Ifriza et al.~\cite{ifriza2026}        & 20  & Ya & Akurasi 95,53\% & ResNet-18 \\
+Wisesty et al.~\cite{wisesty2026}      & 20  & Ya & F1\,=\,0,979   & MobileNetV3 \\
+Nindya et al.~\cite{nindya2025}        & 20  & Ya & Akurasi 93,19\% & VGG-16 \\
+Faizin et al.~\cite{faizin2025}        & 20  & Tidak & F1 meningkat & SkelBAGAN \\
 \midrule
-\textbf{Usulan ini} & \textbf{120} &
-  \textbf{Tidak} & \textbf{--} \\
+\textbf{Usulan ini} & \textbf{120} & \textbf{Tidak}
+  & \textbf{Akurasi 97,08\%; F1 Makro 0,918}
+  & \textbf{4 Arsitektur} \\
 \bottomrule
-\multicolumn{4}{l}{\footnotesize ``Seimbang?'' = apakah dataset
-  pelatihan diseimbangkan secara artifisial.}
+\multicolumn{5}{l}{\footnotesize ``Seimbang?'' = apakah dataset pelatihan diseimbangkan secara artifisial.}
 \end{tabular}
 \end{center}
 \end{table}
+
+EfficientNet-B0 yang diusulkan mencapai akurasi sebanding dengan
+studi seimbang terdahulu (97,08\% vs.\ 97,29\% Susanto et al.),
+meskipun dilatih pada dataset dengan ketidakseimbangan 33,10$\times$.
+Hal ini mengkonfirmasi bahwa \textit{pipeline} yang diusulkan
+berhasil menjembatani kondisi nyata yang tidak seimbang mendekati
+kinerja kondisi seimbang ideal.
 
 % ───────────────────────────────────────────────────────────────
 \section{Kesimpulan}
 \label{sec:conclusion}
 
 Makalah ini memaparkan \textit{pipeline} data empat langkah dan
-kerangka kerja \textit{transfer learning} EfficientNet-B0 untuk
+studi komparatif empat arsitektur \textit{transfer learning} untuk
 pengenalan 120 kelas aksara Jawa tulisan tangan di bawah
 ketidakseimbangan kelas yang parah (IR\,=\,33,10$\times$).
 Kontribusi metodologis utama adalah strategi augmentasi berbasis
 preservasi struktur yang secara eksplisit mengecualikan transformasi
 geometris yang terbukti mengubah makna visual aksara~%
-\cite{wisesty2026,nindya2025}.
-Dikombinasikan dengan stratified split, integrasi data variasi,
-dan \textit{weighted cross-entropy loss}, \textit{pipeline} ini
-menangani tantangan persiapan data yang spesifik terhadap domain ini.
-Protokol evaluasi berlapis (keseluruhan dan per kelompok vokal)
-memberikan penilaian yang lebih transparan terhadap perilaku model
-di bawah ketidakseimbangan kelas dibandingkan metrik agregat saja.
+\cite{wisesty2026,nindya2025}, dikombinasikan dengan stratified split,
+integrasi data variasi, dan \textit{weighted cross-entropy loss}.
+
+Dari evaluasi komparatif diperoleh dua temuan utama.
+\textbf{Pertama,} EfficientNet-B0 mencapai akurasi tertinggi
+97,08\% dengan F1-score makro 0,9110, sebanding dengan studi
+yang menggunakan dataset seimbang~\cite{susantoIJECE2023}.
+\textbf{Kedua,} ResNet-18 menunjukkan keseimbangan kinerja
+yang luar biasa dengan kesenjangan F1 antara Vokal A dan
+Vokal non-A hanya 0,0004 (0,8972 vs.\ 0,8976), menjadikannya
+pilihan arsitektur terbaik ketika kesesuaian generalisasi
+antar kelas lebih diprioritaskan daripada akurasi agregat.
+MobileNetV3-Large dan VGG-16, meskipun relevan dengan literatur
+sebelumnya, menunjukkan kesenjangan yang lebih besar (0,3393 dan
+0,2422) pada kondisi ketidakseimbangan ini.
 
 Penelitian lanjutan mencakup:
 (i) sintesis kelas minoritas berbasis GAN sebagaimana~\cite{faizin2025}
-sebagai sumber augmentasi komplementer;
-(ii) pembandingan multi-arsitektur (MobileNetV3, ResNet-18, VGG-16)
-untuk mengidentifikasi \textit{tradeoff} akurasi--efisiensi yang
-optimal untuk \textit{deployment};
+sebagai sumber augmentasi komplementer yang dapat mengurangi
+ketergantungan pada augmentasi fotometrik;
+(ii) peningkatan jumlah gambar pengujian per kelas minoritas
+untuk memperoleh estimasi metrik per kelas yang lebih andal
+(saat ini hanya 4 gambar/kelas minoritas);
 dan (iii) perluasan ke pengenalan tingkat kata termasuk bentuk
 \textit{pasangan} (penggabungan konsonan), yang merupakan batas
 terbuka berikutnya sebagaimana diidentifikasi
@@ -647,6 +805,18 @@ using skeleton-based balancing generative adversarial networks,''
 \textit{Jurnal RESTI (Rekayasa Sistem dan Teknologi Informasi)},
 vol.~9, no.~4, hal.~820--831, 2025.
 
+\bibitem{he2016resnet}
+K. He, X. Zhang, S. Ren, dan J. Sun,
+``Deep residual learning for image recognition,''
+dalam \textit{Proc. IEEE Conf. Computer Vision and Pattern Recognition
+(CVPR)}, 2016, hal.~770--778.
+
+\bibitem{howard2019mobilenetv3}
+A. Howard et al.,
+``Searching for MobileNetV3,''
+dalam \textit{Proc. IEEE/CVF Int. Conf. Computer Vision (ICCV)},
+2019, hal.~1314--1324.
+
 \bibitem{ifriza2026}
 Y. N. Ifriza et al.,
 ``Optimizing Javanese script recognition using fine-tuned ResNet-18
@@ -660,6 +830,13 @@ T. P. Nindya, M. D. Sulistiyo, dan U. N. Wisesty,
 using CNN with VGG-16 architecture,''
 dalam \textit{Proc. 2025 Int. Conf. Data Science and Its Applications
 (ICoDSA)}, 2025, hal.~1221--1226.
+
+\bibitem{simonyan2015vgg}
+K. Simonyan dan A. Zisserman,
+``Very deep convolutional networks for large-scale image
+recognition,''
+dalam \textit{Proc. Int. Conf. Learning Representations (ICLR)},
+2015.
 
 \bibitem{sulistiyo2025}
 M. D. Sulistiyo et al.,
