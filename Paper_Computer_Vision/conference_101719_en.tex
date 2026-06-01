@@ -9,6 +9,7 @@
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{array}
+\usepackage[hidelinks]{hyperref}
 
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
@@ -27,7 +28,7 @@ Under Severe Class Imbalance}
     \normalsize\textit{School of Computing}\\
     \textit{Telkom University}\\
     Bandung, Indonesia\\
-    \small fathansanum@student.telkomuniversity.ac.id
+    \small fathansanum@student.\linebreak telkomuniversity.ac.id
   \end{minipage}%
   \hfill%
   \begin{minipage}[t]{.31\linewidth}\centering
@@ -43,7 +44,7 @@ Under Severe Class Imbalance}
     \normalsize\textit{School of Computing}\\
     \textit{Telkom University}\\
     Bandung, Indonesia\\
-    \small ardiaramadhan@student.telkomuniversity.ac.id
+    \small ardiaramadhan@student.\linebreak telkomuniversity.ac.id
   \end{minipage}%
 }%
 }
@@ -56,17 +57,19 @@ Javanese script (\textit{Hanacaraka}) is a traditional writing system
 facing the threat of functional extinction due to a declining number of
 generations able to read and write it, making digitization through
 automated character recognition an urgent preservation strategy.
-Two challenges that have not been addressed simultaneously in the
-literature are full coverage of 120 syllabic classes and extreme class
-imbalance, with an imbalance ratio of 33.10$\times$ (largest class
-695 images versus smallest class 21 images) between the Vowel A
-classes as the majority and the five other vowel groups.
+Three research gaps not yet addressed simultaneously in the literature
+are full 120-class recognition under natural class imbalance, with an
+imbalance ratio of 33.10$\times$ (largest class 695 images versus
+smallest class 21 images) between the Vowel A classes and the five
+other vowel groups, structurally safe augmentation that preserves
+Javanese script characteristics, and comparative evaluation across
+transfer learning architectures.
 This study proposes a four-step structure-preserving data preparation
 pipeline that explicitly avoids geometric augmentation to maintain the
 visual integrity of the script, combined with a weighted loss function
 to compensate for class imbalance.
-Four transfer learning architectures --- EfficientNet-B0,
-ResNet-18, VGG-16, and MobileNetV3-Large --- are evaluated
+Four transfer learning architectures (EfficientNet-B0,
+ResNet-18, VGG-16, and MobileNetV3-Large) are evaluated
 comparatively using an identical pipeline, with metrics reported
 separately for majority and minority classes.
 EfficientNet-B0 achieves 97.08\% accuracy with a macro F1-score of
@@ -99,24 +102,24 @@ making digitization via \textit{Optical Character Recognition}
 (OCR) an urgent preservation intervention~\cite{widiarti2026}.
 The primary challenge is that the only public dataset covering all
 120 classes, \textit{Indonesian Local Script Characters}~\cite{wisesty2026},
-exhibits extreme imbalance: Vowel A averages 500 images per class
+exhibits extreme imbalance, where Vowel A averages 500 images per class
 while 100 non-A classes have only around 21 images each, yielding
 an imbalance ratio of 33.10$\times$.
 
 \textit{Transfer learning} based on CNNs has proven effective for
 handwritten regional script recognition with limited
 data~\cite{ifriza2026,nindya2025}, significantly outperforming
-\textit{shallow learning} methods~\cite{sulistiyo2025}.
+\textit{shallow learning} methods.
 Combined with a weighted loss function, this approach provides a
 suitable framework for simultaneously addressing the visual complexity
 of Javanese script and its class imbalance.
 
-Prior studies leave three gaps not yet addressed simultaneously:
+Prior studies leave three gaps not yet addressed simultaneously.
 Susanto et al.~\cite{susantoIJAI2023} achieved 99.65\% accuracy on
 120 classes but on an artificially balanced dataset, while Wisesty
 et al.~\cite{wisesty2026} found that geometric augmentation actually
 degrades Javanese script recognition performance.
-These three gaps are: 120-class recognition under natural class
+These three gaps are 120-class recognition under natural class
 imbalance, structurally safe augmentation strategies, and comparative
 cross-architecture evaluation.
 
@@ -155,11 +158,11 @@ insights into architecture selection, augmentation behavior, and model
 capability limits on 20-class Javanese script.
 Wisesty et al.~\cite{wisesty2026} proposed MNetNCR based on
 MobileNetV3~\cite{howard2019mobilenetv3} for five Nusantara scripts
-and achieved F1\,=\,0.979 for Javanese script without any augmentation.
+and achieved F1\,=\,0.9788 for Javanese script without any augmentation.
 More importantly, applying augmentation to this model actually
 degraded performance to 0.9579 because geometric transformations
-destroyed the visual characteristics distinguishing between classes ---
-an empirical warning that became the primary foundation for the
+destroyed the visual characteristics distinguishing between classes,
+serving as the primary empirical foundation for the
 augmentation strategy in this study.
 Nindya et al.~\cite{nindya2025} applied VGG-16~\cite{simonyan2015vgg}
 to multi-script classification of Balinese, Javanese, and Sundanese
@@ -169,15 +172,18 @@ identifying the ``ha''/``la'' pair (CLR 25.3\%) and ``sa''/``da''
 (CLR 15.8\%) as the most confusion-prone characters due to
 visual similarity.
 Sulistiyo et al.~\cite{sulistiyo2025} compared various
-\textit{shallow learning} methods on the same dataset and found that
-LightGBM achieved only 77.15\% F1-score, far below CNN-based
-approaches, reinforcing the superiority of deep learning for this task.
-Ifriza et al.~\cite{ifriza2026} demonstrated that ResNet-18~%
+\textit{shallow learning} methods on the Javanese script dataset and
+found that even the best-performing XGBoost model struggled
+significantly with visually similar characters such as ``tha''
+(F1-score 13.64\%) and ``nga'' (F1-score 29.63\%), demonstrating
+the inherent limitations of feature-based approaches for
+fine-grained character discrimination.
+Fateah et al.~\cite{ifriza2026} demonstrated that ResNet-18~%
 \cite{he2016resnet} fine-tuned with a \textit{transfer learning}
-strategy can achieve 95.53\% accuracy from only 1,562 images of
-20-class Javanese script, making it the sole ResNet-based
-\textit{transfer learning} reference for Javanese script prior to
-this study.
+strategy can achieve 91\% accuracy and 91\% F1-score from only
+1,562 images of Javanese script, making it the sole ResNet-based \textit{transfer learning}
+reference explicitly targeting Javanese script recognition
+prior to this study.
 All studies in this section, while informative, are limited to
 balanced datasets and have never tested model robustness under
 extreme class imbalance.
@@ -197,8 +203,8 @@ Its limitation lies in the GAN architecture complexity requiring
 significant computational resources, and its scope remaining limited
 to 20 base classes without testing on the full 120-class syllabic
 scenario.
-This study fills that gap with a lighter approach --- structure-preserving
-augmentation and a weighted loss function --- without requiring
+This study fills that gap with a lighter approach, namely structure-preserving
+augmentation and a weighted loss function, without requiring
 additional generative network training.
 
 To understand the positioning of this study in the broader landscape,
@@ -209,13 +215,13 @@ literature review on six Southeast Asian abugida scripts and found
 no studies in the past five years addressing word segmentation for
 either Javanese or Sundanese script, confirming that isolated character
 recognition remains the frontier of Javanese OCR research.
-Widiarti and Adji~\cite{widiarti2026} established a baseline
+Widiarti et al.~\cite{widiarti2026} established a baseline
 evaluation for printed (not handwritten) Javanese OCR, noting that
 handwriting style variation adds a far more complex layer of
 challenges compared to printed script.
 Together, these two studies underscore that the domain of
-handwritten Javanese character recognition --- particularly at
-120-class coverage with imbalanced data --- remains very open and
+handwritten Javanese character recognition, particularly at
+120-class coverage with imbalanced data, remains very open and
 serves as the direct motivation for this study.
 
 % ───────────────────────────────────────────────────────────────
@@ -225,9 +231,9 @@ serves as the direct motivation for this study.
 This study uses the \textit{Indonesian Local Script Characters} dataset,
 curated by Aditya Firman Ihsan et al.\ at Telkom University and
 available on Mendeley Data, which was also used by prior
-studies~\cite{wisesty2026,sulistiyo2025}.
+studies~\cite{wisesty2026}.
 For the Javanese script subset, the dataset consists of two parts with
-a total of 13,257 images: the \texttt{all\_class/} subdirectory
+a total of 13,257 images, comprising the \texttt{all\_class/} subdirectory
 containing 12,191 images across 120 syllabic classes (6 vowels
 $\times$ 20 consonants), and the \texttt{variations/} subdirectory
 containing 1,066 handwriting style variation images for 8 consonants
@@ -241,7 +247,7 @@ nature, as summarized in Table~\ref{tab:dist}.
 The twenty Vowel A classes have 426--695 images per class
 ($\mu = 499.8$), while 100 non-A classes have only 21--22 images
 per class, yielding an imbalance ratio of 33.10$\times$
-(largest/smallest class: 695/21) with a per-class median of only 22,
+(largest/smallest class = 695/21) with a per-class median of only 22,
 far below the mean of 101.59.
 This imbalance is the primary challenge that all pipeline stages are
 designed to address.
@@ -277,8 +283,9 @@ Per-class stratification ensures all 120 classes are represented
 in every subset, including minority classes with only 21 images.
 After augmentation on the training set, the total training samples
 increased to 38,510 images.
-All images were converted to 3-channel grayscale and normalized
-using ImageNet statistics
+All images were converted to grayscale and replicated across three
+channels to maintain compatibility with ImageNet-pretrained backbones,
+then normalized using ImageNet statistics
 ($\mu\,{=}\,[0.485;\ 0.456;\ 0.406]$,
 $\sigma\,{=}\,[0.229;\ 0.224;\ 0.225]$).
 
@@ -289,21 +296,21 @@ $\sigma\,{=}\,[0.229;\ 0.224;\ 0.225]$).
 \subsection{Pipeline Overview}
 
 The primary challenge in this study lies not in the model architecture,
-but in the data conditions --- specifically the extreme class imbalance
+but in the data conditions, specifically the extreme class imbalance
 between Vowel A and non-A classes that causes conventional training
 strategies to produce models systematically biased toward majority
 classes.
 To address this, the study proposes a four-step data preparation
 pipeline executed sequentially before the training process begins.
 Each step is designed to handle one specific aspect of the data
-distribution problem: maintaining minority class representation in
+distribution problem, namely maintaining minority class representation in
 the split, adding data diversity without new collection, filling
 minority classes with structurally safe augmentation, and applying
 proportional penalty weights during training.
 Fig.~\ref{fig:pipeline} illustrates the overall flow of this pipeline.
 
 \begin{figure}[t]
-\centerline{\includegraphics[width=\columnwidth]{fig1.png}}
+\centerline{\includegraphics[width=\columnwidth]{inggris.drawio.png}}
 \caption{Four-step data preparation pipeline applied sequentially
   before model training.}
 \label{fig:pipeline}
@@ -335,6 +342,10 @@ until each class reaches a target of $T = 300$ training images.
 New images are created by repeatedly sampling from existing training
 images and applying transformations until each class reaches $T$
 samples.
+The value $T = 300$ was selected to yield approximately a $14\times$
+increase over the original $\approx$21 minority images per class,
+representing a deliberate balance between expanding data diversity
+and limiting near-duplicate samples generated from a small source pool.
 
 The most critical design constraint is the prohibition of geometric
 transformations in any form.
@@ -414,7 +425,7 @@ the model architectures to evaluate.
 Four CNN architectures with ImageNet-1K pretrained weights are
 selected based on two complementary criteria.
 The first criterion is representation of conceptually distinct
-architecture families: compound scaling efficiency (EfficientNet),
+architecture families, including compound scaling efficiency (EfficientNet),
 residual connections (ResNet), \textit{depthwise separable
 convolution} (MobileNetV3), and deep convolutional blocks (VGG).
 The second criterion is direct relevance to prior Javanese script
@@ -437,7 +448,7 @@ initialized from ImageNet-1K pretraining.
 \midrule
 EfficientNet-B0~\cite{tan2019efficientnet}    & $\sim$5.3M  & -- \\
 MobileNetV3-Large~\cite{howard2019mobilenetv3}& $\sim$5.4M  & Wisesty et al.~\cite{wisesty2026} \\
-ResNet-18~\cite{he2016resnet}                 & $\sim$11.7M & Ifriza et al.~\cite{ifriza2026} \\
+ResNet-18~\cite{he2016resnet}                 & $\sim$11.7M & Fateah et al.~\cite{ifriza2026} \\
 VGG-16~\cite{simonyan2015vgg}                 & $\sim$138M  & Nindya et al.~\cite{nindya2025} \\
 \bottomrule
 \end{tabular}
@@ -492,13 +503,12 @@ All random seeds were fixed at 42 for reproducibility, with a batch
 size of 32 and 3 DataLoader workers.
 
 Evaluation is performed on the test set (1,919 samples) using
-Top-1 accuracy, macro F1-score, and weighted F1-score as overall
-metrics.
+Top-1 accuracy and macro F1-score as overall metrics.
 Macro F1-score is chosen as the primary metric because it assigns
 equal weight to each class regardless of majority class dominance.
 As the primary analytical contribution, macro F1-score is also
 computed separately for the Vowel A group (20 majority classes,
-approximately 1,519 test samples) and the non-A vowel group (100
+1,519 test samples) and the non-A vowel group (100
 minority classes, 400 test samples), with the absolute difference
 between the two used to measure model generalization balance.
 
@@ -555,14 +565,14 @@ augmentation pipeline and weighted loss function.
 
 The most surprising finding comes from ResNet-18, which shows an F1
 gap between Vowel A and non-A Vowel classes of only 0.0004
-(0.8972 vs.\ 0.8976) --- a difference that is practically negligible.
+(0.8972 vs.\ 0.8976), a difference that is practically negligible.
 This was unexpected because ResNet-18 is not the highest-accuracy
 architecture, yet it is the architecture that most successfully
 generalizes in a balanced manner to minority classes.
 This capability likely stems from the \textit{residual connection}
 mechanism, which allows gradients to flow more stably to early layers,
-so low-level visual features relevant to minority script characters ---
-which have only approximately 300 augmented training images --- can
+so low-level visual features relevant to minority script characters,
+even those with only approximately 300 augmented training images, can
 still be learned without distortion from majority-class gradient
 dominance.
 Such findings would be invisible in prior studies using balanced
@@ -588,6 +598,9 @@ fine-tuning strategy.
 EfficientNet-B0 converges at epoch 50 (validation accuracy 97.60\%),
 while ResNet-18 converges earlier at epoch 36, reflecting better
 training efficiency.
+Training curves for VGG-16 and MobileNetV3-Large are omitted as both
+converged without anomalies; their epoch counts and full performance
+metrics are captured in Table~\ref{tab:results}.
 
 \begin{figure}[t]
 \centerline{\includegraphics[width=\columnwidth]%
@@ -625,8 +638,8 @@ comparisons with per-vowel-group analysis.
 \midrule
 Susanto et al.~\cite{susantoIJECE2023} & 120 & Yes & Accuracy 97.29\% \\
 Susanto et al.~\cite{susantoIJAI2023}  & 120 & Yes & Accuracy 99.65\% \\
-Ifriza et al.~\cite{ifriza2026}        & 20  & Yes & Accuracy 95.53\% \\
-Wisesty et al.~\cite{wisesty2026}      & 20  & Yes & F1\,=\,0.979   \\
+Fateah et al.~\cite{ifriza2026}        & 20  & Yes & Accuracy 91\%   \\
+Wisesty et al.~\cite{wisesty2026}      & 20  & Yes & F1\,=\,0.9788  \\
 Nindya et al.~\cite{nindya2025}        & 20  & Yes & Accuracy 93.19\% \\
 Faizin et al.~\cite{faizin2025}        & 20  & No  & -- \\
 \midrule
@@ -646,7 +659,7 @@ Furthermore, no prior study has reported per-vowel-group analysis,
 making the finding of ResNet-18's generalization gap of only 0.0004
 an entirely novel contribution to this literature.
 
-One limitation must be acknowledged: each non-A Vowel class is
+One limitation must be acknowledged, as each non-A Vowel class is
 represented by only 4 images in the test set, so a single misprediction
 already shifts per-class F1 by 25\%.
 Therefore, all conclusions are based on per-vowel-group macro F1
@@ -668,10 +681,10 @@ an appropriate data strategy.
 
 The analytically most significant finding is the performance of
 ResNet-18, which exhibits an F1 gap between majority and minority
-classes of only 0.0004 --- a generalization balance that has never
+classes of only 0.0004, a generalization balance that has never
 been reported in the Javanese script literature because no prior study
 has measured this dimension.
-This finding has direct practical implications: when a Javanese OCR
+This finding has direct practical implications. When a Javanese OCR
 system is deployed on real documents spanning the full vowel spectrum
 uniformly, ResNet-18 is the more appropriate choice than architectures
 with higher aggregate accuracy but bias toward majority classes.
@@ -711,14 +724,15 @@ script character recognition,''
 vol.~15, no.~2, pp.~1513--1528, 2026.
 
 \bibitem{widiarti2026}
-R. Widiarti and F. T. Adji,
+A. R. Widiarti, S. E. P. Adji, F. T. Adji, G. K. B. Indraputra,
+and Y. A. Trisnanto,
 ``A baseline evaluation of OCR segmentation and classification
 methods for printed Javanese script,''
 \textit{Engineering, Technology \& Applied Science Research (ETASR)},
 vol.~16, no.~1, pp.~31699--31705, 2026.
 
 \bibitem{ifriza2026}
-Y. N. Ifriza et al.,
+N. Fateah, Subhan, and Y. N. Ifriza,
 ``Optimizing Javanese script recognition using fine-tuned ResNet-18
 and transfer learning,''
 \textit{International Journal of Artificial Intelligence (IJ-AI)},
@@ -733,9 +747,10 @@ in \textit{Proc. 2025 Int. Conf. Data Science and Its Applications
 
 \bibitem{sulistiyo2025}
 M. D. Sulistiyo et al.,
-``Aksarawa: Comparative study of shallow learning for OCR
-of Nusantara scripts,''
-\textit{Jurnal RESTI}, vol.~9, no.~6, pp.~1537--1546, 2025.
+``Investigating shallow learning methods for optical character
+recognition of Indonesia's Nusantara scripts,''
+\textit{Jurnal RESTI (Rekayasa Sistem dan Teknologi Informasi)},
+vol.~9, no.~6, pp.~1538--1549, 2025.
 
 \bibitem{susantoIJAI2023}
 A. Susanto et al.,
