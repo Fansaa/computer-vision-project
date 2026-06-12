@@ -69,17 +69,18 @@ pipeline that explicitly avoids geometric augmentation to maintain the
 visual integrity of the script, combined with a weighted loss function
 to compensate for class imbalance.
 Four transfer learning architectures (EfficientNet-B0,
-ResNet-18, VGG-16, and MobileNetV3-Large) are evaluated
+MobileNetV3-Large, ResNet-18, and VGG-16) are evaluated
 comparatively using an identical pipeline, with metrics reported
 separately for majority and minority classes.
-EfficientNet-B0 achieves 97.08\% accuracy with a macro F1-score of
-0.9110, comparable to studies using artificially balanced datasets,
-while ResNet-18 exhibits an F1 gap between majority and minority
-classes of only 0.0004.
+EfficientNet-B0 achieves 99.06\% accuracy with a macro F1-score of
+0.9823, surpassing prior studies using artificially balanced datasets,
+while simultaneously maintaining an F1 gap between majority and minority
+classes of only 0.0291, the best generalization balance among all
+architectures tested.
 These results demonstrate that extreme class imbalance can be overcome
-with a targeted pipeline, and confirm that per-class-group analysis is
-necessary to reveal model generalization capabilities hidden by
-aggregate metrics.
+with a targeted pipeline, while per-vowel-group analysis shows that the
+E-taling group is consistently the hardest to recognize across all four
+architectures, a pattern hidden by aggregate metrics.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -125,11 +126,12 @@ cross-architecture evaluation.
 
 This study closes all three gaps by proposing a four-step
 structure-preserving data preparation pipeline and evaluating four
-architectures (EfficientNet-B0, ResNet-18, VGG-16, MobileNetV3-Large)
+architectures (EfficientNet-B0, MobileNetV3-Large, ResNet-18, VGG-16)
 comparatively.
-EfficientNet-B0 achieves 97.08\% accuracy, while ResNet-18 exhibits
-an F1 gap across vowel groups of only 0.0004, a finding revealed only
-through per-vowel-group analysis.
+EfficientNet-B0 achieves 99.06\% accuracy together with the smallest
+F1 gap across vowel groups of only 0.0291, while per-vowel-group
+analysis reveals that the E-taling group is the largest source of
+error across all architectures.
 
 
 % ───────────────────────────────────────────────────────────────
@@ -431,6 +433,17 @@ convolution} (MobileNetV3), and deep convolutional blocks (VGG).
 The second criterion is direct relevance to prior Javanese script
 research, enabling fair comparison against architectures already
 reported in the literature.
+The smallest variant of each family was deliberately chosen so that
+all models could be trained on a single 8\,GB GPU at the same input
+resolution, allowing performance differences to be attributed to
+architectural character rather than computational budget.
+EfficientNet-B0 was selected as a representative of compound scaling
+that balances depth, width, and resolution at a small parameter count.
+ResNet-18 was chosen because it is the backbone reported by Fateah et
+al.~\cite{ifriza2026} for Javanese script, whereas MobileNetV3-Large
+follows the choice of Wisesty et al.~\cite{wisesty2026} and VGG-16
+follows Nindya et al.~\cite{nindya2025}, so all three enable direct
+comparison with already published results.
 Table~\ref{tab:arch} summarizes the four architectures and their
 literature relevance.
 Each architecture's classification head is replaced with a linear
@@ -459,18 +472,26 @@ VGG-16~\cite{simonyan2015vgg}                 & $\sim$138M  & Nindya et al.~\cit
 
 All models follow a uniform two-phase fine-tuning strategy to ensure
 fair cross-architecture comparison.
+The split into two phases is designed to prevent the large gradients
+from the still-random classification head from corrupting the already
+informative pretrained weights.
 In Phase 1 over 10 epochs, all backbone parameters are frozen and
-only the classification head is trained using the Adam optimizer
-with a higher learning rate.
+only the classification head is trained with a higher learning rate.
 This phase aims to build a stable head initialization before gradients
-propagate to the more sensitive pretrained feature layers.
+propagate to the more sensitive pretrained feature layers, and for the
+AdamW-based models a three-epoch \textit{warmup} is also used so that
+the learning-rate transition proceeds smoothly.
 In Phase 2 running up to 90 epochs, all layers are unfrozen for
 full fine-tuning with a lower learning rate.
-During Phase 2, a ReduceLROnPlateau scheduler with factor 0.5 and
-\textit{patience} 3 adaptively reduces the learning rate when
-validation loss stagnates, while \textit{early stopping} halts
-training if no improvement occurs for a number of epochs as specified
-in Table~\ref{tab:hyperparam}.
+The optimizer is matched to each architecture, namely AdamW for
+EfficientNet-B0 and MobileNetV3-Large which are more stable under
+adaptive learning rates, and momentum SGD for ResNet-18 and VGG-16
+which yields better generalization on those two networks.
+During Phase 2, a ReduceLROnPlateau scheduler with factor 0.5
+adaptively reduces the learning rate when validation loss stagnates,
+while \textit{early stopping} with \textit{patience} 20 halts training
+if no improvement occurs, and \textit{label smoothing} of 0.1 is
+applied to all models to curb overconfidence toward majority classes.
 All models are trained using the weighted \texttt{CrossEntropyLoss}
 per~\eqref{eq:weight}.
 Full hyperparameter configuration per architecture is shown in
@@ -481,17 +502,19 @@ Table~\ref{tab:hyperparam}.
 \label{tab:hyperparam}
 \begin{center}
 \renewcommand{\arraystretch}{1.2}
-\begin{tabular}{lcccc}
+\begin{tabular}{lccccc}
 \toprule
-\textbf{Architecture} & \textbf{LR Phase 1} & \textbf{LR Phase 2}
+\textbf{Architecture} & \textbf{Opt.} & \textbf{LR Phase 1} & \textbf{LR Phase 2}
   & \textbf{WD} & \textbf{ES} \\
 \midrule
-EfficientNet-B0    & $10^{-3}$           & $10^{-4}$          & $10^{-5}$ & 10 \\
-MobileNetV3-Large  & $10^{-3}$           & $10^{-4}$          & $10^{-6}$ & 8  \\
-ResNet-18          & $2{\times}10^{-3}$  & $2{\times}10^{-4}$ & $10^{-5}$ & 12 \\
-VGG-16             & $5{\times}10^{-4}$  & $2{\times}10^{-5}$ & $10^{-4}$ & 15 \\
+EfficientNet-B0    & AdamW & $10^{-3}$          & $10^{-4}$          & $10^{-4}$ & 20 \\
+MobileNetV3-Large  & AdamW & $10^{-3}$          & $8{\times}10^{-5}$ & $10^{-5}$ & 20 \\
+ResNet-18          & SGD   & $2{\times}10^{-2}$ & $10^{-3}$          & $5{\times}10^{-4}$ & 20 \\
+VGG-16             & SGD   & $10^{-3}$          & $10^{-4}$          & $5{\times}10^{-4}$ & 20 \\
 \bottomrule
-\multicolumn{5}{l}{\footnotesize WD = weight decay. ES = early stopping patience.}
+\multicolumn{6}{l}{\footnotesize Opt. = optimizer. WD = weight decay. ES = early stopping patience.} \\
+\multicolumn{6}{l}{\footnotesize Label smoothing 0.1 and batch 32 on all models, except} \\
+\multicolumn{6}{l}{\footnotesize VGG-16 uses batch 16, dropout 0.5, and grad clipping 2.0.}
 \end{tabular}
 \end{center}
 \end{table}
@@ -500,7 +523,7 @@ All experiments were run on an NVIDIA GeForce RTX 3070 Ti GPU
 (8\,GB VRAM) with an AMD Ryzen 5 3600 CPU, using Python 3.10,
 PyTorch 2.9.1 (CUDA 13.0), torchvision 0.24.1, and scikit-learn.
 All random seeds were fixed at 42 for reproducibility, with a batch
-size of 32 and 3 DataLoader workers.
+size of 32 for most models and 16 for VGG-16, and 3 DataLoader workers.
 
 Evaluation is performed on the test set (1,919 samples) using
 Top-1 accuracy and macro F1-score as overall metrics.
@@ -508,9 +531,12 @@ Macro F1-score is chosen as the primary metric because it assigns
 equal weight to each class regardless of majority class dominance.
 As the primary analytical contribution, macro F1-score is also
 computed separately for the Vowel A group (20 majority classes,
-1,519 test samples) and the non-A vowel group (100
-minority classes, 400 test samples), with the absolute difference
+1,518 test samples) and the non-A vowel group (100
+minority classes, 401 test samples), with the absolute difference
 between the two used to measure model generalization balance.
+As an indicator of statistical robustness, the 95\% confidence interval
+for the macro F1-score is also computed via \textit{bootstrap} on the
+test-set predictions.
 
 % ───────────────────────────────────────────────────────────────
 \section{Results and Discussion}
@@ -520,13 +546,18 @@ between the two used to measure model generalization balance.
 
 Table~\ref{tab:results} summarizes the performance of all architectures
 on the test set.
-EfficientNet-B0 achieves the highest accuracy of 97.08\% with a macro
-F1-score of 0.9110, while ResNet-18 achieves the highest macro
-F1-score (0.9180).
-MobileNetV3-Large and VGG-16 show lower performance despite having
-5.4 and 138 million parameters respectively, indicating that parameter
-count alone is not deterministic of performance under these imbalanced
-conditions.
+EfficientNet-B0 ranks first on every metric with 99.06\% accuracy and
+a macro F1-score of 0.9823 (95\% confidence interval 0.9640--0.9929),
+followed by MobileNetV3-Large with 98.75\% accuracy and a macro
+F1-score of 0.9663.
+ResNet-18 ranks third with 97.71\% accuracy and a macro F1-score of
+0.9321, while VGG-16 closes the ranking with 94.89\% accuracy and a
+macro F1-score of 0.8326.
+This pattern is notable because the top performers EfficientNet-B0 and
+MobileNetV3-Large are the lightest architectures with about 5 million
+parameters, whereas VGG-16 with its 138 million parameters ranks last,
+so parameter count alone is not deterministic of performance under
+these imbalanced conditions.
 
 \begin{table*}[t]
 \caption{Performance Comparison and Gap Analysis of Four Architectures on the 120-Class Test Set}
@@ -540,10 +571,10 @@ conditions.
   & \textbf{Vowel A F1} & \textbf{Non-A F1}
   & \textbf{Gap} & \textbf{Epochs} \\
 \midrule
-EfficientNet-B0   & \textbf{97.08} & 0.9110          & \textbf{0.9902} & 0.8783          & 0.1119          & 50 \\
-ResNet-18         & 96.93          & \textbf{0.9180} & 0.8972          & \textbf{0.8976} & \textbf{0.0004} & 36 \\
-VGG-16            & 93.38          & 0.7867          & 0.9824          & 0.7402          & 0.2422          & 36 \\
-MobileNetV3-Large & 90.83          & 0.6935          & 0.9714          & 0.6321          & 0.3393          & 52 \\
+EfficientNet-B0   & \textbf{99.06} & \textbf{0.9823} & \textbf{0.9939} & \textbf{0.9648} & \textbf{0.0291} & 49 \\
+MobileNetV3-Large & 98.75          & 0.9663          & 0.9935          & 0.9367          & 0.0568          & 50 \\
+ResNet-18         & 97.71          & 0.9321          & 0.9010          & 0.8593          & 0.0416          & 51 \\
+VGG-16            & 94.89          & 0.8326          & 0.9386          & 0.7232          & 0.2154          & 66 \\
 \bottomrule
 \multicolumn{7}{l}{\footnotesize Gap = $|$Vowel A F1 $-$ Non-A F1$|$.}
 \end{tabular}
@@ -552,70 +583,147 @@ MobileNetV3-Large & 90.83          & 0.6935          & 0.9714          & 0.6321 
 
 \subsection{Vowel A vs.\ Non-A Vowel Gap Analysis}
 
-The Gap column in Table~\ref{tab:results} reveals two important
-patterns hidden by aggregate metrics, which constitute the primary
-analytical contribution of this study.
+The Gap column in Table~\ref{tab:results} reveals a pattern hidden
+by aggregate metrics, which constitutes one of the primary analytical
+contributions of this study.
 
-EfficientNet-B0 exhibits a pattern typical of imbalanced conditions,
-where the very high Vowel A F1 (0.9902) contrasts with a lower
-non-A Vowel F1 (0.8783), yielding a gap of 0.1119.
-This confirms that despite high aggregate accuracy, the model retains
-residual bias toward majority classes not fully eliminated by the
-augmentation pipeline and weighted loss function.
+EfficientNet-B0 not only leads on the overall metrics but also
+maintains the smallest gap of 0.0291, with a Vowel A F1 of 0.9939
+against a non-A Vowel F1 of 0.9648.
+This shows that the structure-preserving augmentation pipeline and the
+weighted loss function suppress majority-class bias almost entirely, so
+the model still recognizes minority classes that each have only about
+300 augmented training images.
+MobileNetV3-Large follows with a comparable pattern, namely a gap of
+0.0568, consistent with its strength in the study of Wisesty et
+al.~\cite{wisesty2026} and confirming that a lightweight architecture
+based on \textit{depthwise separable convolution} remains competitive
+under the far more demanding 120-class condition.
 
-The most surprising finding comes from ResNet-18, which shows an F1
-gap between Vowel A and non-A Vowel classes of only 0.0004
-(0.8972 vs.\ 0.8976), a difference that is practically negligible.
-This was unexpected because ResNet-18 is not the highest-accuracy
-architecture, yet it is the architecture that most successfully
-generalizes in a balanced manner to minority classes.
-This capability likely stems from the \textit{residual connection}
-mechanism, which allows gradients to flow more stably to early layers,
-so low-level visual features relevant to minority script characters,
-even those with only approximately 300 augmented training images, can
-still be learned without distortion from majority-class gradient
-dominance.
-Such findings would be invisible in prior studies using balanced
-datasets, because the majority-minority gap was never measured as a
-variable.
+ResNet-18 displays a qualitatively different pattern.
+Its gap is indeed small (0.0416), but this stems from a relatively low
+Vowel A F1 (0.9010) rather than a high non-A Vowel F1, so its balance
+comes from majority-class performance dropping as well rather than from
+strengthening of the minority classes.
+This observation underscores the importance of reading the gap together
+with both of its underlying values, because a small gap does not always
+indicate good generalization.
 
-VGG-16 and MobileNetV3-Large exhibit larger gaps of 0.2422 and 0.3393.
-For VGG-16, the large gap despite relatively high overall accuracy
-(93.38\%) reflects an architecture more prone to over-optimizing
-majority classes.
-MobileNetV3-Large, which was the best-performing choice of Wisesty
-et al.~\cite{wisesty2026} on a balanced 20-class dataset, shows the
-weakest performance among the four architectures under these imbalanced
-120-class conditions.
+VGG-16 exhibits the largest gap of 0.2154, with its non-A Vowel F1
+falling to 0.7232 even though its Vowel A F1 remains high.
+This reflects a deep convolutional architecture that tends to
+over-optimize majority classes and is the most sensitive to minority
+data scarcity.
+
+The per-vowel-group analysis in Table~\ref{tab:per_vowel} deepens this
+finding by decomposing the macro F1-score for the six vowel groups
+separately.
+EfficientNet-B0 leads or ties on almost every group, even reaching a
+perfect F1 of 1.0000 on the Vowel I group.
+The most consistent pattern is that the E-taling group is the hardest
+across all four architectures, with the lowest F1 throughout, ranging
+from 0.8732 on EfficientNet-B0 down to only 0.6159 on VGG-16.
+The visual similarity of the E-taling marker to several other vowel
+markers, together with its scarce sample count, is the likely cause,
+and this becomes a clear target for improvement in future work.
+
+\begin{table}[t]
+\caption{Macro F1-score per Vowel Group on the Test Set}
+\label{tab:per_vowel}
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\small
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Vowel} & \textbf{Efficient} & \textbf{Mobile}
+  & \textbf{ResNet} & \textbf{VGG} \\
+\textbf{Group} & \textbf{Net-B0} & \textbf{NetV3-L}
+  & \textbf{-18} & \textbf{-16} \\
+\midrule
+Vowel A        & \textbf{0.9939} & 0.9935 & 0.9010 & 0.9386 \\
+Vowel E        & \textbf{0.9889} & 0.9762 & 0.8806 & 0.6383 \\
+Vowel I        & \textbf{1.0000} & 0.9746 & 0.9214 & 0.8976 \\
+Vowel O        & \textbf{0.9746} & 0.9378 & 0.9126 & 0.5673 \\
+Vowel U        & \textbf{0.9873} & 0.9216 & 0.8710 & 0.8969 \\
+Vowel E-taling & \textbf{0.8732} & 0.8732 & 0.7111 & 0.6159 \\
+\bottomrule
+\multicolumn{5}{l}{\footnotesize Highest value per row is in bold.} \\
+\multicolumn{5}{l}{\footnotesize E-taling is consistently the hardest group.}
+\end{tabular}
+\end{center}
+\end{table}
 
 \subsection{Training Curve Analysis}
 
-Fig.~\ref{fig:curves_eff} and~\ref{fig:curves_res} display the training
+Fig.~\ref{fig:curves_eff} and~\ref{fig:curves_mob} display the training
 curves of the two best architectures.
 The Phase 1 to Phase 2 transition (epoch 11) is clearly visible as a
 sharp loss drop, confirming the effectiveness of the two-phase
 fine-tuning strategy.
-EfficientNet-B0 converges at epoch 50 (validation accuracy 97.60\%),
-while ResNet-18 converges earlier at epoch 36, reflecting better
-training efficiency.
-Training curves for VGG-16 and MobileNetV3-Large are omitted as both
-converged without anomalies; their epoch counts and full performance
-metrics are captured in Table~\ref{tab:results}.
+EfficientNet-B0 reaches its best weights at epoch 49 with a validation
+accuracy of 98.99\%, while MobileNetV3-Large reaches its best weights
+at epoch 50 with a validation accuracy of 98.66\%.
+Both curves show a tight gap between training and validation accuracy,
+indicating no meaningful overfitting despite the training set being
+enriched through augmentation.
+Training curves for ResNet-18 and VGG-16 are omitted as both converged
+without anomalies, and their epoch counts and full performance metrics
+are captured in Table~\ref{tab:results}.
 
 \begin{figure}[t]
 \centerline{\includegraphics[width=\columnwidth]%
-  {../results_efficientnet_b0/training_curves.png}}
+  {../New_Model/results_efficientnet_b0/training_curves.png}}
 \caption{EfficientNet-B0 training curves. The Phase 1-to-Phase 2
-  transition is visible at epoch 11.}
+  transition is visible at epoch 11 and the best weights are reached
+  at epoch 49.}
 \label{fig:curves_eff}
 \end{figure}
 
 \begin{figure}[t]
 \centerline{\includegraphics[width=\columnwidth]%
-  {../results_resnet_18/training_curves.png}}
-\caption{ResNet-18 training curves. Faster convergence compared to
-  EfficientNet-B0 (36 vs.\ 50 epochs).}
-\label{fig:curves_res}
+  {../New_Model/results_mobilenetv3_large/training_curves.png}}
+\caption{MobileNetV3-Large training curves as the second-best
+  architecture, with best weights at epoch 50.}
+\label{fig:curves_mob}
+\end{figure}
+
+\subsection{Prediction Result Visualization}
+
+To complement the quantitative analysis, Fig.~\ref{fig:samples}
+through~\ref{fig:confmat} visualize the prediction behavior of
+EfficientNet-B0 as the best architecture on the test set.
+Fig.~\ref{fig:samples} presents example predictions on several test
+images, showing that the model correctly recognizes a range of
+handwriting styles on most samples, including minority classes.
+Fig.~\ref{fig:pervowel} summarizes the F1-score distribution per vowel
+group and reaffirms E-taling as the lowest-performing group.
+Fig.~\ref{fig:confmat} shows a confusion matrix dominated by its
+diagonal, with the small share of errors concentrated on visually
+similar character pairs, consistent with the character-similarity
+findings in prior literature.
+
+\begin{figure}[t]
+\centerline{\includegraphics[width=\columnwidth]%
+  {../New_Model/results_efficientnet_b0/sample_predictions.png}}
+\caption{Example predictions of EfficientNet-B0 on the test set.
+  The true label and predicted label are shown for each sample.}
+\label{fig:samples}
+\end{figure}
+
+\begin{figure}[t]
+\centerline{\includegraphics[width=\columnwidth]%
+  {../New_Model/results_efficientnet_b0/f1_per_vowel.png}}
+\caption{F1-score per vowel group for EfficientNet-B0.
+  The E-taling group obtains the lowest score.}
+\label{fig:pervowel}
+\end{figure}
+
+\begin{figure}[t]
+\centerline{\includegraphics[width=\columnwidth]%
+  {../New_Model/results_efficientnet_b0/confusion_matrix.png}}
+\caption{Confusion matrix of EfficientNet-B0 over 120 classes.
+  The dominant diagonal indicates a low error rate.}
+\label{fig:confmat}
 \end{figure}
 
 \subsection{Comparison with Prior Work}
@@ -643,21 +751,24 @@ Wisesty et al.~\cite{wisesty2026}      & 20  & Yes & F1\,=\,0.9788  \\
 Nindya et al.~\cite{nindya2025}        & 20  & Yes & Accuracy 93.19\% \\
 Faizin et al.~\cite{faizin2025}        & 20  & No  & -- \\
 \midrule
-\textbf{This work} & \textbf{120} & \textbf{No} & \textbf{Accuracy 97.08\%} \\
+\textbf{This work} & \textbf{120} & \textbf{No} & \textbf{Accuracy 99.06\%} \\
 \bottomrule
 \end{tabular}
 \end{center}
 \end{table}
 
-EfficientNet-B0 achieves accuracy comparable to prior balanced studies
-(97.08\% vs.\ 97.29\% by Susanto et al.~\cite{susantoIJECE2023}),
-despite being trained on a dataset with 33.10$\times$ imbalance.
+EfficientNet-B0 achieves 99.06\% accuracy, surpassing prior balanced
+studies (97.29\% by Susanto et al.~\cite{susantoIJECE2023}) and on par
+with the highest reported 99.65\% on an artificially balanced
+dataset~\cite{susantoIJAI2023}, despite being trained on a dataset with
+33.10$\times$ imbalance.
 This confirms that the proposed pipeline successfully bridges naturally
-imbalanced conditions to near the performance of ideal balanced
+imbalanced conditions to match the performance of ideal balanced
 conditions.
 Furthermore, no prior study has reported per-vowel-group analysis,
-making the finding of ResNet-18's generalization gap of only 0.0004
-an entirely novel contribution to this literature.
+making the finding that the best generalization balance is achieved by
+the lightest architecture, and that the E-taling group is consistently
+the hardest, an entirely novel contribution to this literature.
 
 One limitation must be acknowledged, as each non-A Vowel class is
 represented by only 4 images in the test set, so a single misprediction
@@ -674,20 +785,25 @@ This study demonstrates that 120-class handwritten Javanese script
 recognition under severe natural class imbalance can be achieved at
 competitive performance levels through a combination of a
 structure-preserving data preparation pipeline and transfer learning.
-EfficientNet-B0 achieves 97.08\% accuracy comparable to prior studies
+EfficientNet-B0 achieves 99.06\% accuracy, surpassing prior studies
 using artificially balanced datasets~\cite{susantoIJECE2023}, proving
 that imbalanced conditions are not an insurmountable obstacle given
 an appropriate data strategy.
 
-The analytically most significant finding is the performance of
-ResNet-18, which exhibits an F1 gap between majority and minority
-classes of only 0.0004, a generalization balance that has never
-been reported in the Javanese script literature because no prior study
-has measured this dimension.
-This finding has direct practical implications. When a Javanese OCR
-system is deployed on real documents spanning the full vowel spectrum
-uniformly, ResNet-18 is the more appropriate choice than architectures
-with higher aggregate accuracy but bias toward majority classes.
+The analytically most significant finding is that the best
+generalization balance is achieved by the lightest architecture, where
+EfficientNet-B0 maintains an F1 gap between majority and minority
+classes of only 0.0291 while remaining the leader on every aggregate
+metric.
+The per-vowel-group analysis, never reported in the Javanese script
+literature before, shows that the E-taling group is consistently the
+hardest to recognize across all four architectures.
+This finding has direct practical implications, namely when a Javanese
+OCR system is deployed on real documents spanning the full vowel
+spectrum uniformly, EfficientNet-B0 is the most appropriate choice
+because it combines the highest accuracy with the smallest bias toward
+majority classes, while dedicated handling of the E-taling group should
+become a priority for improvement.
 
 This study is limited to isolated character recognition and a small
 test set for minority classes.
