@@ -1,0 +1,805 @@
+{
+  "summary": {
+    "architecture": "VGG-16",
+    "config": {
+      "arch": "VGG-16",
+      "optimizer": "sgd",
+      "lr_phase1": 0.001,
+      "lr_phase2": 0.0001,
+      "weight_decay": 0.0005,
+      "batch_size": 16,
+      "dropout": 0.5,
+      "warmup_epochs": 0,
+      "grad_clip": 2.0,
+      "epochs_phase1": 10,
+      "epochs_phase2": 90,
+      "patience": 20,
+      "label_smoothing": 0.1
+    },
+    "best_epoch": 66,
+    "top1_accuracy": 94.8931735278791,
+    "top5_accuracy": 99.00990099009901,
+    "macro_f1": 0.8326009433641902,
+    "macro_f1_ci": [
+      0.7771892320790965,
+      0.8471778226239597
+    ],
+    "weighted_f1": 0.9478806068472712,
+    "f1_vokal_A": 0.9385827286584252,
+    "f1_non_A": 0.7231957298510094,
+    "gap": 0.21538699880741574,
+    "per_group": {
+      "Vokal A": {
+        "n_classes": 20,
+        "n_samples": 1518,
+        "accuracy": 98.61660079051383,
+        "f1_macro": 0.9385827286584252
+      },
+      "Vokal E": {
+        "n_classes": 20,
+        "n_samples": 81,
+        "accuracy": 72.8395061728395,
+        "f1_macro": 0.6383493318275927
+      },
+      "Vokal I": {
+        "n_classes": 20,
+        "n_samples": 80,
+        "accuracy": 93.75,
+        "f1_macro": 0.8975812547241118
+      },
+      "Vokal O": {
+        "n_classes": 20,
+        "n_samples": 80,
+        "accuracy": 65.0,
+        "f1_macro": 0.5672532781228433
+      },
+      "Vokal U": {
+        "n_classes": 20,
+        "n_samples": 80,
+        "accuracy": 90.0,
+        "f1_macro": 0.8968650793650793
+      },
+      "Vokal È": {
+        "n_classes": 20,
+        "n_samples": 80,
+        "accuracy": 82.5,
+        "f1_macro": 0.6159297052154196
+      }
+    }
+  },
+  "full_report": {
+    "Vokal A_ba": {
+      "precision": 0.958904109589041,
+      "recall": 0.9859154929577465,
+      "f1-score": 0.9722222222222222,
+      "support": 71.0
+    },
+    "Vokal A_ca": {
+      "precision": 1.0,
+      "recall": 0.989010989010989,
+      "f1-score": 0.994475138121547,
+      "support": 91.0
+    },
+    "Vokal A_da": {
+      "precision": 1.0,
+      "recall": 0.9560439560439561,
+      "f1-score": 0.9775280898876404,
+      "support": 91.0
+    },
+    "Vokal A_dha": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 92.0
+    },
+    "Vokal A_ga": {
+      "precision": 0.9866666666666667,
+      "recall": 1.0,
+      "f1-score": 0.9932885906040269,
+      "support": 74.0
+    },
+    "Vokal A_ha": {
+      "precision": 0.9545454545454546,
+      "recall": 0.9692307692307692,
+      "f1-score": 0.9618320610687023,
+      "support": 65.0
+    },
+    "Vokal A_ja": {
+      "precision": 1.0,
+      "recall": 0.989247311827957,
+      "f1-score": 0.9945945945945946,
+      "support": 93.0
+    },
+    "Vokal A_ka": {
+      "precision": 0.9850746268656716,
+      "recall": 1.0,
+      "f1-score": 0.9924812030075187,
+      "support": 66.0
+    },
+    "Vokal A_la": {
+      "precision": 0.9565217391304348,
+      "recall": 0.9850746268656716,
+      "f1-score": 0.9705882352941176,
+      "support": 67.0
+    },
+    "Vokal A_ma": {
+      "precision": 0.989010989010989,
+      "recall": 0.9782608695652174,
+      "f1-score": 0.9836065573770492,
+      "support": 92.0
+    },
+    "Vokal A_na": {
+      "precision": 0.978494623655914,
+      "recall": 1.0,
+      "f1-score": 0.9891304347826086,
+      "support": 91.0
+    },
+    "Vokal A_nga": {
+      "precision": 1.0,
+      "recall": 0.9375,
+      "f1-score": 0.967741935483871,
+      "support": 16.0
+    },
+    "Vokal A_nya": {
+      "precision": 1.0,
+      "recall": 0.9710144927536232,
+      "f1-score": 0.9852941176470589,
+      "support": 69.0
+    },
+    "Vokal A_pa": {
+      "precision": 0.9893617021276596,
+      "recall": 0.9893617021276596,
+      "f1-score": 0.9893617021276596,
+      "support": 94.0
+    },
+    "Vokal A_ra": {
+      "precision": 0.9726027397260274,
+      "recall": 0.9861111111111112,
+      "f1-score": 0.9793103448275862,
+      "support": 72.0
+    },
+    "Vokal A_sa": {
+      "precision": 0.9893617021276596,
+      "recall": 0.9893617021276596,
+      "f1-score": 0.9893617021276596,
+      "support": 94.0
+    },
+    "Vokal A_ta": {
+      "precision": 1.0,
+      "recall": 0.9705882352941176,
+      "f1-score": 0.9850746268656716,
+      "support": 68.0
+    },
+    "Vokal A_tha": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 16.0
+    },
+    "Vokal A_wa": {
+      "precision": 0.978494623655914,
+      "recall": 1.0,
+      "f1-score": 0.9891304347826086,
+      "support": 91.0
+    },
+    "Vokal A_ya": {
+      "precision": 1.0,
+      "recall": 0.9904761904761905,
+      "f1-score": 0.9952153110047847,
+      "support": 105.0
+    },
+    "Vokal E_be": {
+      "precision": 0.25,
+      "recall": 0.25,
+      "f1-score": 0.25,
+      "support": 4.0
+    },
+    "Vokal E_ce": {
+      "precision": 0.5,
+      "recall": 0.5,
+      "f1-score": 0.5,
+      "support": 4.0
+    },
+    "Vokal E_de": {
+      "precision": 1.0,
+      "recall": 0.25,
+      "f1-score": 0.4,
+      "support": 4.0
+    },
+    "Vokal E_dhe": {
+      "precision": 0.75,
+      "recall": 0.75,
+      "f1-score": 0.75,
+      "support": 4.0
+    },
+    "Vokal E_ge": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1-score": 0.6666666666666666,
+      "support": 4.0
+    },
+    "Vokal E_he": {
+      "precision": 0.5714285714285714,
+      "recall": 0.8,
+      "f1-score": 0.6666666666666666,
+      "support": 5.0
+    },
+    "Vokal E_je": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4.0
+    },
+    "Vokal E_ke": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4.0
+    },
+    "Vokal E_le": {
+      "precision": 0.6,
+      "recall": 0.75,
+      "f1-score": 0.6666666666666666,
+      "support": 4.0
+    },
+    "Vokal E_me": {
+      "precision": 0.75,
+      "recall": 0.75,
+      "f1-score": 0.75,
+      "support": 4.0
+    },
+    "Vokal E_ne": {
+      "precision": 0.5714285714285714,
+      "recall": 1.0,
+      "f1-score": 0.7272727272727273,
+      "support": 4.0
+    },
+    "Vokal E_nge": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1-score": 0.6666666666666666,
+      "support": 4.0
+    },
+    "Vokal E_nye": {
+      "precision": 0.6666666666666666,
+      "recall": 1.0,
+      "f1-score": 0.8,
+      "support": 4.0
+    },
+    "Vokal E_pe": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1-score": 0.6666666666666666,
+      "support": 4.0
+    },
+    "Vokal E_re": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4.0
+    },
+    "Vokal E_se": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4.0
+    },
+    "Vokal E_te": {
+      "precision": 0.6666666666666666,
+      "recall": 0.5,
+      "f1-score": 0.5714285714285714,
+      "support": 4.0
+    },
+    "Vokal E_the": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4.0
+    },
+    "Vokal E_we": {
+      "precision": 0.5,
+      "recall": 0.75,
+      "f1-score": 0.6,
+      "support": 4.0
+    },
+    "Vokal E_ye": {
+      "precision": 1.0,
+      "recall": 0.75,
+      "f1-score": 0.8571428571428571,
+      "support": 4.0
+    },
+    "Vokal I_bi": {
+      "precision": 1.0,
+      "recall": 0.75,
+      "f1-score": 0.8571428571428571,
+      "support": 4.0
+    },
+    "Vokal I_ci": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4.0
+    },
+    "Vokal I_dhi": {
+      "precision": 1.0,
+      "recall": 0.75,
+      "f1-score": 0.8571428571428571,
+      "support": 4.0
+    },
+    "Vokal I_di": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4.0
+    },
+    "Vokal I_gi": {
+      "precision": 0.75,
+      "recall": 0.75,
+      "f1-score": 0.75,
+      "support": 4.0
+    },
+    "Vokal I_hi": {
+      "precision": 0.8,
+      "recall": 1.0,
+      "f1-score": 0.8888888888888888,
+      "support": 4.0
+    },
+    "Vokal I_ji": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4.0
+    },
+    "Vokal I_ki": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4.0
+    },
+    "Vokal I_li": {
+      "precision": 0.6666666666666666,
+      "recall": 1.0,
+      "f1-score": 0.8,
+      "support": 4.0
+    },
+    "Vokal I_mi": {
+      "precision": 0.6666666666666666,
+      "recall": 1.0,
+      "f1-score": 0.8,
+      "support": 4.0
+    },
+    "Vokal I_ngi": {
+      "precision": 0.75,
+      "recall": 0.75,
+      "f1-score": 0.75,
+      "support": 4.0
+    },
+    "Vokal I_ni": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4.0
+    },
+    "Vokal I_nyi": {
+      "precision": 0.8,
+      "recall": 1.0,
+      "f1-score": 0.8888888888888888,
+      "support": 4.0
+    },
+    "Vokal I_pi": {
+      "precision": 0.8,
+      "recall": 1.0,
+      "f1-score": 0.8888888888888888,
+      "support": 4.0
+    },
+    "Vokal I_ri": {
+      "precision": 0.75,
+      "recall": 0.75,
+      "f1-score": 0.75,
+      "support": 4.0
+    },
+    "Vokal I_si": {
+      "precision": 0.8,
+      "recall": 1.0,
+      "f1-score": 0.8888888888888888,
+      "support": 4.0
+    },
+    "Vokal I_thi": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4.0
+    },
+    "Vokal I_ti": {
+      "precision": 0.8,
+      "recall": 1.0,
+      "f1-score": 0.8888888888888888,
+      "support": 4.0
+    },
+    "Vokal I_wi": {
+      "precision": 0.8,
+      "recall": 1.0,
+      "f1-score": 0.8888888888888888,
+      "support": 4.0
+    },
+    "Vokal I_yi": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4.0
+    },
+    "Vokal O_bo": {
+      "precision": 0.5,
+      "recall": 0.25,
+      "f1-score": 0.3333333333333333,
+      "support": 4.0
+    },
+    "Vokal O_co": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1-score": 0.6666666666666666,
+      "support": 4.0
+    },
+    "Vokal O_dho": {
+      "precision": 0.6666666666666666,
+      "recall": 1.0,
+      "f1-score": 0.8,
+      "support": 4.0
+    },
+    "Vokal O_do": {
+      "precision": 0.5,
+      "recall": 0.75,
+      "f1-score": 0.6,
+      "support": 4.0
+    },
+    "Vokal O_go": {
+      "precision": 0.5,
+      "recall": 0.75,
+      "f1-score": 0.6,
+      "support": 4.0
+    },
+    "Vokal O_ho": {
+      "precision": 0.4,
+      "recall": 0.5,
+      "f1-score": 0.4444444444444444,
+      "support": 4.0
+    },
+    "Vokal O_jo": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1-score": 0.6666666666666666,
+      "support": 4.0
+    },
+    "Vokal O_ko": {
+      "precision": 0.75,
+      "recall": 0.75,
+      "f1-score": 0.75,
+      "support": 4.0
+    },
+    "Vokal O_lo": {
+      "precision": 0.6666666666666666,
+      "recall": 0.5,
+      "f1-score": 0.5714285714285714,
+      "support": 4.0
+    },
+    "Vokal O_mo": {
+      "precision": 0.6666666666666666,
+      "recall": 0.5,
+      "f1-score": 0.5714285714285714,
+      "support": 4.0
+    },
+    "Vokal O_ngo": {
+      "precision": 0.5,
+      "recall": 0.25,
+      "f1-score": 0.3333333333333333,
+      "support": 4.0
+    },
+    "Vokal O_no": {
+      "precision": 0.6,
+      "recall": 0.75,
+      "f1-score": 0.6666666666666666,
+      "support": 4.0
+    },
+    "Vokal O_nyo": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4.0
+    },
+    "Vokal O_po": {
+      "precision": 0.75,
+      "recall": 0.75,
+      "f1-score": 0.75,
+      "support": 4.0
+    },
+    "Vokal O_ro": {
+      "precision": 0.75,
+      "recall": 0.75,
+      "f1-score": 0.75,
+      "support": 4.0
+    },
+    "Vokal O_so": {
+      "precision": 0.6666666666666666,
+      "recall": 0.5,
+      "f1-score": 0.5714285714285714,
+      "support": 4.0
+    },
+    "Vokal O_tho": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4.0
+    },
+    "Vokal O_to": {
+      "precision": 0.3333333333333333,
+      "recall": 0.25,
+      "f1-score": 0.2857142857142857,
+      "support": 4.0
+    },
+    "Vokal O_wo": {
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1-score": 0.6666666666666666,
+      "support": 4.0
+    },
+    "Vokal O_yo": {
+      "precision": 0.75,
+      "recall": 0.75,
+      "f1-score": 0.75,
+      "support": 4.0
+    },
+    "Vokal U_bu": {
+      "precision": 1.0,
+      "recall": 0.75,
+      "f1-score": 0.8571428571428571,
+      "support": 4.0
+    },
+    "Vokal U_cu": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4.0
+    },
+    "Vokal U_dhu": {
+      "precision": 0.6666666666666666,
+      "recall": 1.0,
+      "f1-score": 0.8,
+      "support": 4.0
+    },
+    "Vokal U_du": {
+      "precision": 0.6666666666666666,
+      "recall": 1.0,
+      "f1-score": 0.8,
+      "support": 4.0
+    },
+    "Vokal U_gu": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4.0
+    },
+    "Vokal U_hu": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4.0
+    },
+    "Vokal U_ju": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4.0
+    },
+    "Vokal U_ku": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4.0
+    },
+    "Vokal U_lu": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4.0
+    },
+    "Vokal U_mu": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4.0
+    },
+    "Vokal U_ngu": {
+      "precision": 0.6666666666666666,
+      "recall": 0.5,
+      "f1-score": 0.5714285714285714,
+      "support": 4.0
+    },
+    "Vokal U_nu": {
+      "precision": 1.0,
+      "recall": 0.75,
+      "f1-score": 0.8571428571428571,
+      "support": 4.0
+    },
+    "Vokal U_nyu": {
+      "precision": 0.6666666666666666,
+      "recall": 1.0,
+      "f1-score": 0.8,
+      "support": 4.0
+    },
+    "Vokal U_pu": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4.0
+    },
+    "Vokal U_ru": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4.0
+    },
+    "Vokal U_su": {
+      "precision": 1.0,
+      "recall": 0.75,
+      "f1-score": 0.8571428571428571,
+      "support": 4.0
+    },
+    "Vokal U_thu": {
+      "precision": 0.75,
+      "recall": 0.75,
+      "f1-score": 0.75,
+      "support": 4.0
+    },
+    "Vokal U_tu": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1-score": 0.6666666666666666,
+      "support": 4.0
+    },
+    "Vokal U_wu": {
+      "precision": 0.8,
+      "recall": 1.0,
+      "f1-score": 0.8888888888888888,
+      "support": 4.0
+    },
+    "Vokal U_yu": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4.0
+    },
+    "Vokal È_bè": {
+      "precision": 1.0,
+      "recall": 0.75,
+      "f1-score": 0.8571428571428571,
+      "support": 4.0
+    },
+    "Vokal È_cè": {
+      "precision": 0.8,
+      "recall": 1.0,
+      "f1-score": 0.8888888888888888,
+      "support": 4.0
+    },
+    "Vokal È_dhè": {
+      "precision": 0.75,
+      "recall": 0.75,
+      "f1-score": 0.75,
+      "support": 4.0
+    },
+    "Vokal È_dè": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4.0
+    },
+    "Vokal È_gè": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4.0
+    },
+    "Vokal È_hè": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1-score": 0.6666666666666666,
+      "support": 4.0
+    },
+    "Vokal È_jè": {
+      "precision": 0.8,
+      "recall": 1.0,
+      "f1-score": 0.8888888888888888,
+      "support": 4.0
+    },
+    "Vokal È_kè": {
+      "precision": 1.0,
+      "recall": 0.75,
+      "f1-score": 0.8571428571428571,
+      "support": 4.0
+    },
+    "Vokal È_lè": {
+      "precision": 1.0,
+      "recall": 0.75,
+      "f1-score": 0.8571428571428571,
+      "support": 4.0
+    },
+    "Vokal È_mè": {
+      "precision": 1.0,
+      "recall": 0.75,
+      "f1-score": 0.8571428571428571,
+      "support": 4.0
+    },
+    "Vokal È_ngè": {
+      "precision": 1.0,
+      "recall": 0.75,
+      "f1-score": 0.8571428571428571,
+      "support": 4.0
+    },
+    "Vokal È_nyè": {
+      "precision": 0.8,
+      "recall": 1.0,
+      "f1-score": 0.8888888888888888,
+      "support": 4.0
+    },
+    "Vokal È_nè": {
+      "precision": 0.8,
+      "recall": 1.0,
+      "f1-score": 0.8888888888888888,
+      "support": 4.0
+    },
+    "Vokal È_pè": {
+      "precision": 1.0,
+      "recall": 0.75,
+      "f1-score": 0.8571428571428571,
+      "support": 4.0
+    },
+    "Vokal È_rè": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4.0
+    },
+    "Vokal È_sè": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1-score": 0.6666666666666666,
+      "support": 4.0
+    },
+    "Vokal È_thè": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4.0
+    },
+    "Vokal È_tè": {
+      "precision": 1.0,
+      "recall": 0.75,
+      "f1-score": 0.8571428571428571,
+      "support": 4.0
+    },
+    "Vokal È_wè": {
+      "precision": 0.75,
+      "recall": 0.75,
+      "f1-score": 0.75,
+      "support": 4.0
+    },
+    "Vokal È_yè": {
+      "precision": 0.75,
+      "recall": 0.75,
+      "f1-score": 0.75,
+      "support": 4.0
+    },
+    "accuracy": 0.948931735278791,
+    "macro avg": {
+      "precision": 0.8592935787774325,
+      "recall": 0.8373933120782724,
+      "f1-score": 0.8326009433641902,
+      "support": 1919.0
+    },
+    "weighted avg": {
+      "precision": 0.9548835235984028,
+      "recall": 0.948931735278791,
+      "f1-score": 0.9478806068472712,
+      "support": 1919.0
+    }
+  }
+}
